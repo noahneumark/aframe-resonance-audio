@@ -19,9 +19,9 @@
         <a-assets>
           <!-- <audio id="track" src="break.mp3"></audio> -->
           <!-- <a-asset-item id="speaker1" src="/models/model.glb"></a-asset-item> -->
-          <img id="left" src="beartracksL.jpg">
-          <img id="right" src="beartracksR.jpg">
-          <img id="full" src="spits.jpg" alt="full spits sky">
+          <img id="left" src="assets/img/beartracksL.jpg">
+          <img id="right" src="assets/img/beartracksR.jpg">
+
         </a-assets>
         <a-resonance-audio-room
 
@@ -43,7 +43,7 @@
             color="#4CC3D9"
             position="0 4 -1"
             rotation="0 0 0"
-            resonance-audio-src="src:break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 3; maxDistance: 40; autoplay: true;"
+            resonance-audio-src="src:assets/audio/break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 3; maxDistance: 40; autoplay: true;"
           ></a-box>
 
         </a-resonance-audio-room>
@@ -55,7 +55,6 @@
         <a-sky id="sky1" src="#left" stereo="eye:left" geometry="thetaLength:60; thetaStart:60;"></a-sky>
         <a-sky id="sky2" src="#right" stereo="eye:right" geometry="thetaLength:60; thetaStart:60;"></a-sky>
 
-        <a-entity overunder="beartracks.vr.jpg"></a-entity>
         <a-camera position="0 0 2" stereocam="eye:left;"></a-camera>
 
       </a-scene>
