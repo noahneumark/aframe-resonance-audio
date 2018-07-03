@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Cinesthesia</title>
+    <meta name="description" content="Experience Live Music">
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
+    <script src="components/resonance-audio-room.js"></script>
+    <script src="components/resonance-audio-src.js"></script>
+
+    <script src="https://unpkg.com/aframe-physics-system@1.4.0/dist/aframe-physics-system.min.js"></script>
+    <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
+
+  </head>
+  <body>
+      <a-scene physics>
+        <a-assets>
+          <!-- <audio id="track" src="break.mp3"></audio> -->
+          <!-- <a-asset-item id="speaker1" src="/models/model.glb"></a-asset-item> -->
+          <img id="left" src="beartracksL.jpg">
+          <img id="right" src="beartracksR.jpg">
+          <img id="full" src="spits.jpg" alt="full spits sky">
+        </a-assets>
+        <a-resonance-audio-room
+
+          position="0 0 0"
+          width="40"
+          height="20"
+          depth="40"
+          ambisonic-order="3"
+          speed-of-sound="300"
+          left="transparent"
+          right="transparent"
+          front="transparent"
+          back="transparent"
+          down="grass"
+          up="transparent">
+
+          <a-box id="speaker"
+            dynamic-body
+            color="#4CC3D9"
+            position="0 4 -1"
+            rotation="0 0 0"
+            resonance-audio-src="src:break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 3; maxDistance: 40; autoplay: true;"
+          ></a-box>
+
+        </a-resonance-audio-room>
+
+        <a-plane material="opacity: 0.0; transparent: true" position="0 -.5 0" rotation="-90 0 0" width="40" height="40" color="rgba(117, 98, 17, 0)" static-body ></a-plane>
+
+        <!-- Sky sphere -->
+        <!-- <a-sky id="skyfull" src="#full" radius="5600" rotation="0 90 0"></a-sky> -->
+        <a-sky id="sky1" src="#left" stereo="eye:left" geometry="thetaLength:60; thetaStart:60;"></a-sky>
+        <a-sky id="sky2" src="#right" stereo="eye:right" geometry="thetaLength:60; thetaStart:60;"></a-sky>
+
+        <a-entity overunder="beartracks.vr.jpg"></a-entity>
+        <a-camera position="0 0 2" stereocam="eye:left;"></a-camera>
+
+      </a-scene>
+
+      <script type="text/javascript">
+        var vrbutton
+        var room = document.querySelector('a-resonance-audio-room')
+        var scene = document.querySelector('a-scene');
+        var ctx
+        // var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+        var iOS = AFRAME.utils.isIOS()
+        console.log(iOS);
+        if (iOS) {
+
+          scene.addEventListener('loaded', function () {
+            room.components["resonance-audio-room"].pause()
+            vrbutton = document.querySelector('.a-enter-vr-button')
+            ctx = room.components['resonance-audio-room'].resonanceAudioContext
+            var unlock = function() {
+              ctx.resume()
+              room.components["resonance-audio-room"].update();
+              room.components["resonance-audio-room"].play();
+              vrbutton.removeEventListener('click', unlock);
+            };
+            vrbutton.addEventListener('click', unlock, false);
+
+          }, false);
+
+        }
+
+
+      </script>
+
+  </body>
+</html>
