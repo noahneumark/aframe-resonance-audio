@@ -9,7 +9,11 @@ AFRAME.registerComponent('resonance-audio-src', {
   schema: {
     src: {type: 'asset'},
     loop: {type: 'boolean', default: true},
-    autoplay: {type: 'boolean', default: true}
+    autoplay: {type: 'boolean', default: true},
+    alpha: {type: 'number', default: 0},
+		sharpness: {type: 'number', default: 1},
+		gain: {type: 'number', default: 1},
+		maxDistance: {type: 'number', default: 1000}
   },
   init () {
     this.pos = new AFRAME.THREE.Vector3()

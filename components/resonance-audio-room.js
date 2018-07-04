@@ -1,5 +1,4 @@
 /* global AFRAME AudioContext */
-// import {ResonanceAudio} from 'resonance-audio'
 
 const log = AFRAME.utils.debug
 const warn = log('components:resonance-audio-room:warn')
@@ -45,6 +44,7 @@ AFRAME.registerComponent('resonance-audio-room', {
       stream: false
     }
     this.setUpAudio()
+    this.audioLoader = new THREE.AudioLoader();
   },
 
   update : function (oldData) {
@@ -55,6 +55,7 @@ AFRAME.registerComponent('resonance-audio-room', {
   tick () {
     const cameraEl = this.el.sceneEl.camera.el
     this.cameraMatrix4 = cameraEl.object3D.matrixWorld
+    this.resonanceAudioSceneSource.setFromMatrix(this.sound.getMatrixWorld())
   },
 
   // update resonanceAudioScene after room is tocked
@@ -151,6 +152,9 @@ AFRAME.registerComponent('resonance-audio-room', {
     if (!this.mediaElementAudioNode) {
       this.mediaElementAudioNode = this.resonanceAudioContext.createMediaElementSource(this.el.audioElement)
     }
+    // if (!this.BufferSource) {
+    //   this.BufferSource = this.resonanceAudioContext.createMediaElementSource(this.el.audioElement)
+    // }
     // Add the MediaElementSource to the scene as an audio input source.
     if (!this.resonanceAudioSceneSource) {
       this.resonanceAudioSceneSource = this.resonanceAudioScene.createSource()
@@ -171,6 +175,14 @@ AFRAME.registerComponent('resonance-audio-room', {
     } else {
       this.el.audioElement.removeAttribute('loop')
     }
+    // Set directivity patterns
+		this.resonanceAudioSceneSource.setDirectivityPattern(this.sound.data.alpha, this.sound.data.sharpness)
+
+		// Set gainNode
+		this.resonanceAudioSceneSource.setGain(this.sound.data.gain)
+
+		// Set max distance
+		this.resonanceAudioSceneSource.setMaxDistance(this.sound.data.maxDistance)
   },
 
   connectStreamSrc (stream) {

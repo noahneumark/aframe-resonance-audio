@@ -24,6 +24,8 @@
   "author": "",
   "dependencies": {
     "aframe": "^0.8.2",
-    "aframe-stereo-component": "^0.6.0"
+    "aframe-stereo-component": "^0.6.0",
+    "express": "^4.16.3",
+    "resonance-audio": "^1.0.0"
   }
 }
