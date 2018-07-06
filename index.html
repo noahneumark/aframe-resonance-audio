@@ -38,17 +38,25 @@
           down="grass"
           up="transparent">
 
-          <a-box id="speaker"
+          <a-box id="speaker1"
             dynamic-body
             color="#4CC3D9"
-            position="0 0 -2"
-            rotation="0 90 0"
-            resonance-audio-src="src:assets/audio/break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40; autoplay: true;"
+            position="-2 50 -2"
+            rotation="0 45 0"
+            resonance-audio-src="src:assets/audio/break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40;"
+          ></a-box>
+
+          <a-box id="speaker2"
+            dynamic-body
+            color="#4CC3D9"
+            position="2 50 -2"
+            rotation="0 -45 0"
+            resonance-audio-src="src:assets/audio/break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40;"
           ></a-box>
 
         </a-resonance-audio-room>
 
-        <a-plane material="opacity: 0.0; transparent: true" position="0 -.5 0" rotation="-90 0 0" width="40" height="40" color="rgba(117, 98, 17, 0)" static-body ></a-plane>
+        <a-plane material="opacity: 0.0; transparent: true" position="0 -.5 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
 
         <!-- Sky sphere -->
         <!-- <a-sky id="skyfull" src="#full" radius="5600" rotation="0 90 0"></a-sky> -->
@@ -65,7 +73,7 @@
         var scene = document.querySelector('a-scene');
         var ctx
         // var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-        var iOS = AFRAME.utils.isIOS()
+        var iOS = AFRAME.utils.device.isIOS()
         console.log(iOS);
         if (iOS) {
 

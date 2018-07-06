@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Testing</title>
+    <meta name="description" content="Experience Live Music">
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.5.1/dist/aframe-look-at-component.min.js"></script>
+    <script src="components/noah-RA-room.js"></script>
+    <script src="components/noah-RA-src.js"></script>
+
+  </head>
+  <body>
+
+    <a-scene>
+      <a-assets>
+        <img id='skyL' src='assets/img/beartracksL.jpg'>
+        <audio id="break" src="assets/audio/break.mp3">
+        <audio id="stream" src="assets/audio/stream.wav">
+      </a-assets>
+
+      <a-sky src="assets/img/beartracksL.jpg" geometry="thetaLength:80; thetaStart:50;"></a-sky>
+      <a-resonance-audio-room id="room"
+        width="400"
+        height="200"
+        depth="400"
+        ambisonic-order="3"
+        speed-of-sound="300"
+        left="transparent"
+        right="transparent"
+        front="transparent"
+        back="transparent"
+        down="grass"
+        up="transparent">
+        <a-entity resonance-audio-src="src: #break; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40;"></a-entity>
+        <a-entity resonance-audio-src="src: #stream; gain: 10; maxDistance: 40;"></a-entity>
+      </a-resonance-audio-room>
+
+    </a-scene>
+  </body>
+sss
+</html>

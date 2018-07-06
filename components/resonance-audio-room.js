@@ -212,13 +212,13 @@ AFRAME.registerComponent('resonance-audio-room', {
   },
 
   pause () {
-    if (this.el.audioEl) {
+    if (this.el.audioElement) {
       this.el.audioElement.pause()
     }
   },
 
   play () {
-    if (this.el.audioEl && this.el.audioEl.paused && this.resonanceAudioContext.state === "running") {
+    if (this.el.audioElement && this.el.audioElement.paused && this.resonanceAudioContext.state === "running") {
       this.el.audioElement.play()
     }
   }
