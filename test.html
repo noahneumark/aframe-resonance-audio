@@ -7,25 +7,28 @@
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-system@1.4.0/dist/aframe-physics-system.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.5.1/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
     <script src="components/noah-RA-room.js"></script>
     <script src="components/noah-RA-src.js"></script>
 
   </head>
   <body>
 
-    <a-scene>
+    <a-scene physics>
       <a-assets>
         <img id='skyL' src='assets/img/beartracksL.jpg'>
+        <img id='skyR' src='assets/img/beartracksR.jpg'>
         <audio id="break" src="assets/audio/break.mp3">
         <audio id="stream" src="assets/audio/stream.wav">
+        <audio id="ambi" src="assets/audio/ambi.wav">
       </a-assets>
 
-      <a-sky src="assets/img/beartracksL.jpg" geometry="thetaLength:80; thetaStart:50;"></a-sky>
       <a-resonance-audio-room id="room"
-        width="400"
+        width="200"
         height="200"
-        depth="400"
+        depth="200"
         ambisonic-order="3"
         speed-of-sound="300"
         left="transparent"
@@ -34,9 +37,15 @@
         back="transparent"
         down="grass"
         up="transparent">
-        <a-entity resonance-audio-src="src: #break; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40;"></a-entity>
-        <a-entity resonance-audio-src="src: #stream; gain: 10; maxDistance: 40;"></a-entity>
+        <a-entity id="breakResSrc" dynamic-body resonance-audio-src="src: #break; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40; autoplay: false;" position="1 20 -2"></a-entity>
+        <a-entity dynamic-body resonance-audio-src="src: #stream; gain: 10; maxDistance: 40; autoplay: false;" position="-1 20 -2"></a-entity>
       </a-resonance-audio-room>
+
+      <a-sky src="#skyL" stereo="eye:left" geometry="thetaLength:80; thetaStart:50;"></a-sky>
+      <a-sky src="#skyR" stereo="eye:left" geometry="thetaLength:80; thetaStart:50;"></a-sky>
+      <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
+
+      <a-camera position="0 1.5 0" stereocam="eye:left;"></a-camera>
 
     </a-scene>
   </body>

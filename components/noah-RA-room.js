@@ -33,9 +33,6 @@ AFRAME.registerComponent('resonance-audio-room', {
 
     //binding methods
     this.roomSetup = this.roomSetup.bind(this)
-
-    //linking to childEl
-    this.child = this.el.children[0].components['resonance-audio-src']
   },
 
   update : function (oldData){

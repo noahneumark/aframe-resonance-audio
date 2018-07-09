@@ -11,6 +11,7 @@ AFRAME.registerComponent('resonance-audio-src', {
 		sharpness: {type: 'number', default: 1},
 		gain: {type: 'number', default: 1},
 		maxDistance: {type: 'number', default: 1000},
+    sourceWidth: {type: 'number', default: 60},
     streamObject: {
       default: {},
       parse: function (value) {
@@ -32,16 +33,13 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.pos = new AFRAME.THREE.Vector3()
     this.el.parentEl.addEventListener('loaded', this.postLoadInit.bind(this))
     this.exposeAPI()
-
+    this.initialPlay = true
   },
 
   postLoadInit () {
     this.room = this.el.parentEl.components['resonance-audio-room']
     this.resonanceAudioScene = this.room.resonanceAudioScene
     this.resonanceAudioContext = this.room.resonanceAudioContext
-    console.log(room);
-    console.log(this.resonanceAudioScene);
-    console.log(this.resonanceAudioContext);
     //run audioContext methods from here
     this.setMediaSrc (this.data.src)
   },
@@ -97,12 +95,12 @@ AFRAME.registerComponent('resonance-audio-src', {
   disconnectPreviousSrc () {
     if (this.connectedSrc.element) {
       this.mediaElementAudioNode.disconnect(this.resonanceAudioSceneSource.input)
+      delete this.mediaElementAudioNode
       this.connectedSrc.element = false
     }
     if (this.connectedSrc.stream) {
       this.mediaStreamAudioNode.disconnect(this.resonanceAudioSceneSource.input)
       delete this.mediaStreamAudioNode
-      console.log(this.mediaStreamAudioNode)
       this.connectedSrc.stream = false
     }
   },
@@ -121,8 +119,6 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.mediaElementAudioNode.connect(this.resonanceAudioSceneSource.input)
     this.connectedSrc.element = true
 
-    // this.setPosition()
-
     // Set directivity patterns
     this.resonanceAudioSceneSource.setDirectivityPattern(this.data.alpha, this.data.sharpness)
 
@@ -131,6 +127,9 @@ AFRAME.registerComponent('resonance-audio-src', {
 
     // Set max distance
     this.resonanceAudioSceneSource.setMaxDistance(this.data.maxDistance)
+
+    // Set max distance
+    this.resonanceAudioSceneSource.setSourceWidth(this.data.sourceWidth)
 
     // Looping
     if (this.data.loop) {
@@ -141,18 +140,39 @@ AFRAME.registerComponent('resonance-audio-src', {
 
     // Play the audio.
     if (this.data.autoplay && this.resonanceAudioContext.state === "running") {
-      this.sourceNode.play()
+      this.play()
     } else if (this.data.autoplay && AFRAME.utils.device.isIOS()) {
       console.log('Account for iOS audioContext suspend state');
+    } else if (!this.data.autoplay && this.resonanceAudioContext.state === "running") {
+      this.pause()
     }
 
+  },
+
+  playSound () {
+    this.sourceNode.play()
+  },
+
+  pauseSound () {
+    if (this.sourceNode) {
+      this.sourceNode.pause()
+    }
   },
 
   play () {
-    if (this.sourceNode && this.sourceNode.paused && this.resonanceAudioContext.state === "running") {
-      this.sourceNode.play()
+    if (this.initialPlay && !this.data.autoplay) {
+      this.initialPlay = false
+      return
+    }
+    if (this.resonanceAudioContext.state === "running") {
+      this.playSound()
     }
   },
+
+  pause () {
+    this.pauseSound()
+  },
+
   tick() {
     this.setPosition()
   },
@@ -162,11 +182,7 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.sourceNode = null
   },
 
-  pause () {
-    if (this.sourceNode) {
-      this.sourceNode.pause()
-    }
-  },
+
   setPosition () {
     this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)
   },
