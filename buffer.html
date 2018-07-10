@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Buffer Test</title>
+  </head>
+  <body>
+    <button type="button" name="button">Play/Stop</button>
+    <script type="text/javascript">
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      var actx = new AudioContext(),
+      src = "/assets/audio/stream.wav",
+      audioData, srcNode;  // global so we can access them from handlers
+
+      // Load some audio (CORS need to be allowed or we won't be able to decode the data)
+      fetch(src, {mode: "cors"}).then(function(resp) {return resp.arrayBuffer()}).then(decode);
+
+      // Decode the audio file, then start the show
+      function decode(buffer) {
+        actx.decodeAudioData(buffer, playLoop);
+      }
+
+      // Sets up a new source node as needed as stopping will render current invalid
+      function playLoop(abuffer) {
+        if (!audioData) {
+          audioData = abuffer; // create a reference for control buttons
+        }
+        srcNode = actx.createBufferSource();  // create audio source
+        srcNode.buffer = abuffer;             // use decoded buffer
+        srcNode.connect(actx.destination);    // create output
+        srcNode.loop = true;                  // takes care of perfect looping
+        srcNode.start();                      // play...
+      }
+
+      // Simple example control
+      document.querySelector("button").onclick = function() {
+      if (srcNode) {
+        srcNode.stop();
+        srcNode = null;
+        this.innerText = "Play";
+      } else {
+        playLoop(audioData);
+        this.innerText = "Stop";
+      }
+      };
+
+      document.body.onclick = function() {
+        actx.resume()
+      }
+    </script>
+  </body>
+</html>

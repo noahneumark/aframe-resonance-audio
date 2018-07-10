@@ -4,7 +4,7 @@ AFRAME.registerComponent('resonance-audio-src', {
   multiple: false,
 
   schema: {
-    src: {type: 'asset', default: ''},
+    src: {type: 'string', default: ''},
     loop: {type: 'boolean', default: true},
     autoplay: {type: 'boolean', default: true},
     alpha: {type: 'number', default: 0},
@@ -64,6 +64,7 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   setMediaSrc (src) {
+    var self = this
     // Simplified asset parsing, similar to the one used by A-Frame.
     if (typeof src !== 'string') { throw new TypeError('invalid src') }
     // For src connected to audio asset with #id reference
@@ -72,17 +73,43 @@ AFRAME.registerComponent('resonance-audio-src', {
       if (!el) { throw new Error('invalid src') }
       src = el.getAttribute('src')
       this.sourceNode = el
+      this.connectElementSrc()
     } else {  // For instances with a local reference to audio path
-      this.el.audioElement = document.createElement('audio')
-      // Don't connect a new element if it's left empty.
       if (src === '' || typeof src == 'undefined') { return }
+      fetch(src, {mode: "cors"}).then(function(resp) {return resp.arrayBuffer()})
+      .then(function (buffer) {
+        self.resonanceAudioContext.decodeAudioData(buffer, function (audioData) {
+          self.sourceNode = self.resonanceAudioContext.createBufferSource()
+          self.sourceNode.buffer = audioData;
+          self.connectBufferSrc()
+        })
+      })
+
+
+
+      // this.el.audioElement = document.createElement('audio')
+      // Don't connect a new element if it's left empty.
+      // if (src === '' || typeof src == 'undefined') { return }
       // Load an audio file into the AudioElement.
-      this.el.audioElement.setAttribute('src', src)
-      this.sourceNode = this.el.audioElement
+      // this.el.audioElement.setAttribute('src', src)
+      // this.sourceNode = this.el.audioElement
     }
     this.el.setAttribute('resonance-audio-src', {streamObject : null, src : src})
 
-    this.connectElementSrc()
+
+  },
+
+  connectBufferSrc() {
+    this.disconnectPreviousSrc();
+    if (!this.resonanceAudioSceneSource) {
+      this.resonanceAudioSceneSource = this.resonanceAudioScene.createSource()
+    }
+    this.sourceNode.connect(this.resonanceAudioSceneSource.input)
+    this.connectedSrc.buffer = true
+    if (this.data.loop) {
+      this.sourceNode.loop = true
+    }
+    this.setupSource()
   },
 
   setMediaStream (mediaStream) {
@@ -94,6 +121,11 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   disconnectPreviousSrc () {
+    if (this.connectedSrc.buffer) {
+      this.audioBufferSourceNode.disconnect(this.resonanceAudioSceneSource.input)
+      delete this.audioBufferSourceNode
+      this.connectedSrc.buffer = false
+    }
     if (this.connectedSrc.element) {
       this.mediaElementAudioNode.disconnect(this.resonanceAudioSceneSource.input)
       delete this.mediaElementAudioNode
@@ -119,7 +151,16 @@ AFRAME.registerComponent('resonance-audio-src', {
     }
     this.mediaElementAudioNode.connect(this.resonanceAudioSceneSource.input)
     this.connectedSrc.element = true
+    // Looping
+    if (this.data.loop) {
+      this.sourceNode.setAttribute('loop', 'true')
+    } else {
+      this.sourceNode.removeAttribute('loop')
+    }
+    this.setupSource()
+  },
 
+  setupSource() {
     // Set directivity patterns
     this.resonanceAudioSceneSource.setDirectivityPattern(this.data.alpha, this.data.sharpness)
 
@@ -132,18 +173,9 @@ AFRAME.registerComponent('resonance-audio-src', {
     // Set max distance
     this.resonanceAudioSceneSource.setSourceWidth(this.data.sourceWidth)
 
-    // Looping
-    if (this.data.loop) {
-      this.sourceNode.setAttribute('loop', 'true')
-    } else {
-      this.sourceNode.removeAttribute('loop')
-    }
-
     // Play the audio.
     if (this.data.autoplay && this.resonanceAudioContext.state === "running") {
       this.playSound()
-    } else if (this.data.autoplay && AFRAME.utils.device.isIOS()) {
-      console.log('Account for iOS audioContext suspend state and autoplay');
     } else if (!this.data.autoplay && this.resonanceAudioContext.state === "running") {
       this.pauseSound()
     }
@@ -151,15 +183,23 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   playSound () {
-    this.sourceNode.play()
-    .catch(function (err) {
-      console.log(err);
-    })
+    if (this.connectedSrc.element) {
+      this.sourceNode.play()
+      .catch(function (err) {
+        console.log(err);
+      })
+    } else if (this.connectedSrc.buffer) {
+      this.sourceNode.start()
+    }
   },
 
   pauseSound () {
     if (this.sourceNode) {
-      this.sourceNode.pause()
+      if (this.connectedSrc.element) {
+        this.sourceNode.pause()
+      } else if (this.connectedSrc.buffer) {
+        this.sourceNode.stop()
+      }
     }
   },
 
@@ -179,11 +219,12 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   tick() {
-    this.setPosition()
+    // Does not seem to be synching the sound position with the entity position.
+    this.setPosition.bind(this)
   },
 
   remove () {
-    this.sourceNode.pause()
+    this.pauseSound()
     this.sourceNode = null
   },
 
