@@ -20,10 +20,11 @@
       <a-assets>
         <img id='skyL' src='assets/img/beartracksL.jpg'>
         <img id='skyR' src='assets/img/beartracksR.jpg'>
-        <audio id="break" src="assets/audio/break.mp3">
-        <audio id="stream" src="assets/audio/stream.wav">
+        <audio id="brkEl" src="assets/audio/break.mp3">
+        <audio id="streamEl" src="assets/audio/stream.wav">
         <audio id="ambi" src="assets/audio/ambi.wav">
       </a-assets>
+
 
       <a-resonance-audio-room id="room"
         width="200"
@@ -37,17 +38,20 @@
         back="transparent"
         down="grass"
         up="transparent">
-        <a-entity id="breakResSrc" dynamic-body resonance-audio-src="src: #break; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40; autoplay: false;" position="1 20 -2"></a-entity>
-        <a-entity dynamic-body resonance-audio-src="src: #stream; gain: 10; maxDistance: 40; autoplay: false;" position="-1 20 -2"></a-entity>
+        <a-entity id="brkon" dynamic-body resonance-audio-src="src: #brkEl; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40; autoplay: false;" position="1 20 -2"></a-entity>
+        <a-entity id="strm" dynamic-body resonance-audio-src="src: #streamEl; gain: 10; maxDistance: 40;" position="-1 20 -2"></a-entity>
       </a-resonance-audio-room>
 
-      <a-sky src="#skyL" stereo="eye:left" geometry="thetaLength:80; thetaStart:50;"></a-sky>
-      <a-sky src="#skyR" stereo="eye:left" geometry="thetaLength:80; thetaStart:50;"></a-sky>
+      <a-sky src="#skyL" stereo="eye:left" rotation="0 200 0" geometry="thetaLength:80; thetaStart:50;"></a-sky>
+      <a-sky src="#skyR" stereo="eye:right" rotation="0 200 0" geometry="thetaLength:80; thetaStart:50;"></a-sky>
       <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
 
-      <a-camera position="0 1.5 0" stereocam="eye:left;"></a-camera>
+
+      <a-camera position="0 1.5 0" stereocam="eye:left;">
+        <a-entity text="value: Click for Audio; geometry: plane; align: center; color: red;" position="0 0.3 -0.5"></a-entity>
+      </a-camera>
 
     </a-scene>
   </body>
-sss
+
 </html>

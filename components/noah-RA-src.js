@@ -37,6 +37,7 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   postLoadInit () {
+    this.el.parentEl.removeEventListener('loaded', this.postLoadInit.bind(this))
     this.room = this.el.parentEl.components['resonance-audio-room']
     this.resonanceAudioScene = this.room.resonanceAudioScene
     this.resonanceAudioContext = this.room.resonanceAudioContext
@@ -108,7 +109,7 @@ AFRAME.registerComponent('resonance-audio-src', {
   connectElementSrc () {
     this.disconnectPreviousSrc();
 
-    // Generate a Resonance Audio Node from the sourceNode.
+    // Generate an Audio Node from the sourceNode element.
     if (!this.mediaElementAudioNode) {
       this.mediaElementAudioNode = this.resonanceAudioContext.createMediaElementSource(this.sourceNode)
     }
@@ -140,17 +141,20 @@ AFRAME.registerComponent('resonance-audio-src', {
 
     // Play the audio.
     if (this.data.autoplay && this.resonanceAudioContext.state === "running") {
-      this.play()
+      this.playSound()
     } else if (this.data.autoplay && AFRAME.utils.device.isIOS()) {
-      console.log('Account for iOS audioContext suspend state');
+      console.log('Account for iOS audioContext suspend state and autoplay');
     } else if (!this.data.autoplay && this.resonanceAudioContext.state === "running") {
-      this.pause()
+      this.pauseSound()
     }
 
   },
 
   playSound () {
     this.sourceNode.play()
+    .catch(function (err) {
+      console.log(err);
+    })
   },
 
   pauseSound () {
@@ -160,11 +164,12 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   play () {
-    if (this.initialPlay && !this.data.autoplay) {
+    if (this.initialPlay) {
       this.initialPlay = false
-      return
     }
-    if (this.resonanceAudioContext.state === "running") {
+    if (!this.data.autoplay) {
+      return
+    } else if (this.resonanceAudioContext.state === "running") {
       this.playSound()
     }
   },
@@ -181,7 +186,6 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.sourceNode.pause()
     this.sourceNode = null
   },
-
 
   setPosition () {
     this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)

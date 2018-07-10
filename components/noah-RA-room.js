@@ -25,14 +25,22 @@ AFRAME.registerComponent('resonance-audio-room', {
   },
 
   init : function () {
+    //binding methods
+    this.roomSetup = this.roomSetup.bind(this)
+    this.handleIOSResume = this.handleIOSResume.bind(this)
+    this.handleIOSPlay = this.handleIOSPlay.bind(this)
+
     this.builtInGeometry = true
     this.cameraMatrix4 = new AFRAME.THREE.Matrix4()
     this.resonanceAudioContext = new AudioContext()
     this.resonanceAudioScene = new ResonanceAudio(this.resonanceAudioContext)
     this.resonanceAudioScene.output.connect(this.resonanceAudioContext.destination)
+    if (AFRAME.utils.device.isIOS()){
+      document.body.addEventListener('touchstart', this.handleIOSResume)
+      document.body.addEventListener('touchend', this.handleIOSPlay)
+    }
+    console.log(this.resonanceAudioContext.state);
 
-    //binding methods
-    this.roomSetup = this.roomSetup.bind(this)
   },
 
   update : function (oldData){
@@ -84,6 +92,27 @@ AFRAME.registerComponent('resonance-audio-room', {
   setPosition () {
     this.el.object3D.updateMatrixWorld()
   },
+
+  handleIOSResume () {
+    const cxt = this.resonanceAudioContext
+    console.log(cxt)
+    cxt.resume()
+    .then(function () {
+      console.log(cxt);
+    })
+  },
+
+  handleIOSPlay () {
+    const children = this.el.getChildren()
+    children.forEach(function (child, i) {
+      const components = child.components
+      if (components.hasOwnProperty('resonance-audio-src')) {
+        if (components['resonance-audio-src'].data.autoplay) {
+          components['resonance-audio-src'].playSound()
+        }
+      }
+    })
+  }
 
 })
 
