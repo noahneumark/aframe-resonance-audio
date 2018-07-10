@@ -27,8 +27,8 @@ AFRAME.registerComponent('resonance-audio-room', {
   init : function () {
     //binding methods
     this.roomSetup = this.roomSetup.bind(this)
-    this.handleIOSResume = this.handleIOSResume.bind(this)
-    this.handleIOSPlay = this.handleIOSPlay.bind(this)
+    this.handleLockedResume = this.handleLockedResume.bind(this)
+    this.handleLockedPlay = this.handleLockedPlay.bind(this)
 
     var sceneEl = this.el.sceneEl
     this.builtInGeometry = true
@@ -36,7 +36,7 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.resonanceAudioContext = new AudioContext()
     this.resonanceAudioScene = new ResonanceAudio(this.resonanceAudioContext)
     this.resonanceAudioScene.output.connect(this.resonanceAudioContext.destination)
-    if (AFRAME.utils.device.isIOS()){
+    if (this.resonanceAudioContext.state === "suspended"){
       //add click instructions
       var clickForAudioEl = document.createElement('a-entity')
       clickForAudioEl.setAttribute('text', {
@@ -50,8 +50,8 @@ AFRAME.registerComponent('resonance-audio-room', {
       var camera = document.querySelector('[camera]')
       camera.appendChild(clickForAudioEl)
       //initiate and unlock audio
-      document.body.addEventListener('touchstart', this.handleIOSResume)
-      document.body.addEventListener('touchend', this.handleIOSPlay)
+      document.body.addEventListener('touchstart', this.handleLockedResume)
+      document.body.addEventListener('touchend', this.handleLockedPlay)
     }
     console.log(this.resonanceAudioContext.state);
   },
@@ -106,7 +106,7 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.el.object3D.updateMatrixWorld()
   },
 
-  handleIOSResume () {
+  handleLockedResume () {
     var camera = document.querySelector('[camera]')
     camera.removeChild(this.clickForAudioEl)
     const cxt = this.resonanceAudioContext
@@ -117,7 +117,7 @@ AFRAME.registerComponent('resonance-audio-room', {
     })
   },
 
-  handleIOSPlay () {
+  handleLockedPlay () {
     const children = this.el.getChildren()
     children.forEach(function (child, i) {
       const components = child.components
