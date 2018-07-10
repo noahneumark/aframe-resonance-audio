@@ -132,30 +132,38 @@ AFRAME.registerComponent('resonance-audio-src', {
   connectElementSrc () {
     this.disconnectPreviousSrc();
 
-    // Generate an Audio Node from the sourceNode element.
-    if (!this.mediaElementAudioNode) {
-      this.mediaElementAudioNode = this.resonanceAudioContext.createMediaElementSource(this.sourceNode)
-      console.log(this.mediaElementAudioNode);
+    // Generate a GLOBAL Audio Node from the sourceNode element.
+    if (!this.el.sceneEl.mediaElementAudioNode) {
+      this.el.sceneEl.mediaElementAudioNode = this.resonanceAudioContext.createMediaElementSource(this.sourceNode)
+      //Generate GLOBAL Splitter
+      this.el.sceneEl.splitter = this.resonanceAudioContext.createChannelSplitter(2);
+      //Connect Node to Splitter
+      this.el.sceneEl.mediaElementAudioNode.connect(this.el.sceneEl.splitter)
     }
-    //Channel Splitter and Merger
-    var splitter = this.resonanceAudioContext.createChannelSplitter(2);
-    var merger = this.resonanceAudioContext.createChannelMerger();
+    // Make local reference to Node
+    this.mediaElementAudioNode = this.el.sceneEl.mediaElementAudioNode
 
-    this.mediaElementAudioNode.connect(splitter)
+    // Make local reference to Splitter
+    this.splitter = this.el.sceneEl.splitter
+
+    //Generate LOCAL Merger
+    this.merger = this.resonanceAudioContext.createChannelMerger();
+
+
     if (this.data.channel === 'both') {
-      splitter.connect(merger, 0)
-      splitter.connect(merger, 1)
+      this.splitter.connect(this.merger, 0)
+      this.splitter.connect(this.merger, 1)
     } else if (this.data.channel === 'left') {
-      splitter.connect(merger, 0)
+      this.splitter.connect(this.merger, 0)
     } else {
-      splitter.connect(merger, 1)
+      this.splitter.connect(this.merger, 1)
     }
 
     // Generate an input for the scene.
     if (!this.resonanceAudioSceneSource) {
       this.resonanceAudioSceneSource = this.resonanceAudioScene.createSource()
     }
-    merger.connect(this.resonanceAudioSceneSource.input)
+    this.merger.connect(this.resonanceAudioSceneSource.input)
     // this.mediaElementAudioNode.connect(this.resonanceAudioSceneSource.input)
     this.connectedSrc.element = true
     // Looping
