@@ -25,7 +25,7 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.setMediaStream = this.setMediaStream.bind(this)
     this.exposeAPI = this.exposeAPI.bind(this)
     this.disconnectPreviousSrc = this.disconnectPreviousSrc.bind(this)
-    this.setPosition = this.setPosition.bind(this)
+    // this.setPosition = this.setPosition.bind(this)
     this.connectedSrc = {}
     this.connectedSrc.element = false
     this.connectedSrc.stream = false
@@ -84,9 +84,6 @@ AFRAME.registerComponent('resonance-audio-src', {
           self.connectBufferSrc()
         })
       })
-
-
-
       // this.el.audioElement = document.createElement('audio')
       // Don't connect a new element if it's left empty.
       // if (src === '' || typeof src == 'undefined') { return }
@@ -96,20 +93,6 @@ AFRAME.registerComponent('resonance-audio-src', {
     }
     this.el.setAttribute('resonance-audio-src', {streamObject : null, src : src})
 
-
-  },
-
-  connectBufferSrc() {
-    this.disconnectPreviousSrc();
-    if (!this.resonanceAudioSceneSource) {
-      this.resonanceAudioSceneSource = this.resonanceAudioScene.createSource()
-    }
-    this.sourceNode.connect(this.resonanceAudioSceneSource.input)
-    this.connectedSrc.buffer = true
-    if (this.data.loop) {
-      this.sourceNode.loop = true
-    }
-    this.setupSource()
   },
 
   setMediaStream (mediaStream) {
@@ -136,6 +119,19 @@ AFRAME.registerComponent('resonance-audio-src', {
       delete this.mediaStreamAudioNode
       this.connectedSrc.stream = false
     }
+  },
+
+  connectBufferSrc() {
+    this.disconnectPreviousSrc();
+    if (!this.resonanceAudioSceneSource) {
+      this.resonanceAudioSceneSource = this.resonanceAudioScene.createSource()
+    }
+    this.sourceNode.connect(this.resonanceAudioSceneSource.input)
+    this.connectedSrc.buffer = true
+    if (this.data.loop) {
+      this.sourceNode.loop = true
+    }
+    this.setupSource()
   },
 
   connectElementSrc () {
@@ -173,11 +169,8 @@ AFRAME.registerComponent('resonance-audio-src', {
     // Set max distance
     this.resonanceAudioSceneSource.setSourceWidth(this.data.sourceWidth)
 
-    // Play the audio.
     if (this.data.autoplay && this.resonanceAudioContext.state === "running") {
       this.playSound()
-    } else if (!this.data.autoplay && this.resonanceAudioContext.state === "running") {
-      this.pauseSound()
     }
 
   },
@@ -207,8 +200,8 @@ AFRAME.registerComponent('resonance-audio-src', {
     if (this.initialPlay) {
       this.initialPlay = false
     }
-    if (!this.data.autoplay) {
-      return
+    if (!this.data.autoplay && this.initialPlay) {
+      this.pauseSound()
     } else if (this.resonanceAudioContext.state === "running") {
       this.playSound()
     }
@@ -218,9 +211,12 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.pauseSound()
   },
 
-  tick() {
+  tick () {
     // Does not seem to be synching the sound position with the entity position.
-    this.setPosition.bind(this)
+    if (this.resonanceAudioSceneSource) {
+      this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)
+    }
+    // this.setPosition.bind(this)
   },
 
   remove () {
