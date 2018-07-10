@@ -53,7 +53,6 @@ AFRAME.registerComponent('resonance-audio-room', {
       document.body.addEventListener('touchstart', this.handleLockedResume)
       document.body.addEventListener('touchend', this.handleLockedPlay)
     }
-    console.log(this.resonanceAudioContext.state);
   },
 
   update : function (oldData){
@@ -110,11 +109,7 @@ AFRAME.registerComponent('resonance-audio-room', {
     var camera = document.querySelector('[camera]')
     camera.removeChild(this.clickForAudioEl)
     const cxt = this.resonanceAudioContext
-    console.log(cxt)
     cxt.resume()
-    .then(function () {
-      console.log(cxt);
-    })
   },
 
   handleLockedPlay () {

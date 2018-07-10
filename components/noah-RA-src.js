@@ -5,6 +5,7 @@ AFRAME.registerComponent('resonance-audio-src', {
 
   schema: {
     src: {type: 'string', default: ''},
+    channel: {type: 'string', default: 'both'},
     loop: {type: 'boolean', default: true},
     autoplay: {type: 'boolean', default: true},
     alpha: {type: 'number', default: 0},
@@ -84,12 +85,6 @@ AFRAME.registerComponent('resonance-audio-src', {
           self.connectBufferSrc()
         })
       })
-      // this.el.audioElement = document.createElement('audio')
-      // Don't connect a new element if it's left empty.
-      // if (src === '' || typeof src == 'undefined') { return }
-      // Load an audio file into the AudioElement.
-      // this.el.audioElement.setAttribute('src', src)
-      // this.sourceNode = this.el.audioElement
     }
     this.el.setAttribute('resonance-audio-src', {streamObject : null, src : src})
 
@@ -140,12 +135,28 @@ AFRAME.registerComponent('resonance-audio-src', {
     // Generate an Audio Node from the sourceNode element.
     if (!this.mediaElementAudioNode) {
       this.mediaElementAudioNode = this.resonanceAudioContext.createMediaElementSource(this.sourceNode)
+      console.log(this.mediaElementAudioNode);
     }
+    //Channel Splitter and Merger
+    var splitter = this.resonanceAudioContext.createChannelSplitter(2);
+    var merger = this.resonanceAudioContext.createChannelMerger();
+
+    this.mediaElementAudioNode.connect(splitter)
+    if (this.data.channel === 'both') {
+      splitter.connect(merger, 0)
+      splitter.connect(merger, 1)
+    } else if (this.data.channel === 'left') {
+      splitter.connect(merger, 0)
+    } else {
+      splitter.connect(merger, 1)
+    }
+
     // Generate an input for the scene.
     if (!this.resonanceAudioSceneSource) {
       this.resonanceAudioSceneSource = this.resonanceAudioScene.createSource()
     }
-    this.mediaElementAudioNode.connect(this.resonanceAudioSceneSource.input)
+    merger.connect(this.resonanceAudioSceneSource.input)
+    // this.mediaElementAudioNode.connect(this.resonanceAudioSceneSource.input)
     this.connectedSrc.element = true
     // Looping
     if (this.data.loop) {
