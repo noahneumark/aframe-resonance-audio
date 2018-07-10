@@ -38,18 +38,16 @@
         back="transparent"
         down="grass"
         up="transparent">
-        <!-- <a-entity id="brkon" dynamic-body resonance-audio-src="src:#brkEl; alpha:0.5; sharpness: 1; gain: 2; maxDistance: 40; " position="3 20 -2"></a-entity> -->
+        <a-entity id="brkon" dynamic-body resonance-audio-src="src:#brkEl; alpha:0.5; sharpness: 1; gain: 1; maxDistance: 40; " position="3 20 -2"></a-entity>
         <a-entity id="strm" dynamic-body resonance-audio-src="src:assets/audio/stream.wav; gain: 10; maxDistance: 40;" position="-3 20 -2"></a-entity>
       </a-resonance-audio-room>
 
       <a-sky src="#skyL" stereo="eye:left" rotation="0 200 0" geometry="thetaLength:80; thetaStart:50;"></a-sky>
       <a-sky src="#skyR" stereo="eye:right" rotation="0 200 0" geometry="thetaLength:80; thetaStart:50;"></a-sky>
-      <!-- <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane> -->
+      <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
 
 
-      <a-camera position="0 1.5 0" stereocam="eye:left;">
-        <a-entity text="value: Click for Audio; geometry: plane; align: center; color: red;" position="0 0.1 -.7"></a-entity>
-      </a-camera>
+      <a-camera position="0 1.5 0" stereocam="eye:left;"></a-camera>
 
     </a-scene>
   </body>

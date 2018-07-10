@@ -30,17 +30,30 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.handleIOSResume = this.handleIOSResume.bind(this)
     this.handleIOSPlay = this.handleIOSPlay.bind(this)
 
+    var sceneEl = this.el.sceneEl
     this.builtInGeometry = true
     this.cameraMatrix4 = new AFRAME.THREE.Matrix4()
     this.resonanceAudioContext = new AudioContext()
     this.resonanceAudioScene = new ResonanceAudio(this.resonanceAudioContext)
     this.resonanceAudioScene.output.connect(this.resonanceAudioContext.destination)
     if (AFRAME.utils.device.isIOS()){
+      //add click instructions
+      var clickForAudioEl = document.createElement('a-entity')
+      clickForAudioEl.setAttribute('text', {
+        value: 'Click for Audio',
+        geometry: 'plane',
+        align: 'center',
+        color: 'red'
+      })
+      clickForAudioEl.object3D.position.set(0, 0.1, -.7)
+      this.clickForAudioEl = clickForAudioEl
+      var camera = document.querySelector('[camera]')
+      camera.appendChild(clickForAudioEl)
+      //initiate and unlock audio
       document.body.addEventListener('touchstart', this.handleIOSResume)
       document.body.addEventListener('touchend', this.handleIOSPlay)
     }
     console.log(this.resonanceAudioContext.state);
-
   },
 
   update : function (oldData){
@@ -94,6 +107,8 @@ AFRAME.registerComponent('resonance-audio-room', {
   },
 
   handleIOSResume () {
+    var camera = document.querySelector('[camera]')
+    camera.removeChild(this.clickForAudioEl)
     const cxt = this.resonanceAudioContext
     console.log(cxt)
     cxt.resume()
