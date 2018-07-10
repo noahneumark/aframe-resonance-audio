@@ -231,11 +231,9 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   tick () {
-    // Does not seem to be synching the sound position with the entity position.
-    if (this.resonanceAudioSceneSource) {
+    if (this.resonanceAudioSceneSource) { //Safe from asynch calls
       this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)
     }
-    // this.setPosition.bind(this)
   },
 
   remove () {
@@ -247,4 +245,23 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)
   },
 
+})
+
+AFRAME.registerPrimitive('a-resonance-audio-src', {
+  defaultComponents: {
+    'resonance-audio-src': {},
+  },
+
+  mappings: {
+    src: 'resonance-audio-src.src',
+    channel: 'resonance-audio-src.channel',
+    loop: 'resonance-audio-src.loop',
+    autoplay: 'resonance-audio-src.autoplay',
+    alpha: 'resonance-audio-src.alpha',
+		sharpness: 'resonance-audio-src.sharpness',
+		gain: 'resonance-audio-src.gain',
+		maxDistance: 'resonance-audio-src.maxDistance',
+    sourceWidth: 'resonance-audio-src.sourceWidth',
+    streamObject: 'resonance-audio-src.streamObject'
+  }
 })
