@@ -106,6 +106,7 @@ AFRAME.registerComponent('resonance-audio-room', {
   },
 
   handleLockedResume () {
+    document.body.removeEventListener('touchstart', this.handleLockedResume)
     var camera = document.querySelector('[camera]')
     camera.removeChild(this.clickForAudioEl)
     const cxt = this.resonanceAudioContext
@@ -113,6 +114,7 @@ AFRAME.registerComponent('resonance-audio-room', {
   },
 
   handleLockedPlay () {
+    document.body.removeEventListener('touchend', this.handleLockedPlay)
     const children = this.el.getChildren()
     children.forEach(function (child, i) {
       const components = child.components

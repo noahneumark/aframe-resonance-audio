@@ -8,7 +8,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-system@1.4.0/dist/aframe-physics-system.min.js"></script>
-    <script src="https://unpkg.com/aframe-look-at-component@0.5.1/dist/aframe-look-at-component.min.js"></script>
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
     <script src="components/noah-RA-room.js"></script>
     <script src="components/noah-RA-src.js"></script>
@@ -23,6 +23,7 @@
         <audio id="brkEl" src="assets/audio/break.mp3">
         <audio id="streamEl" src="assets/audio/stream.wav">
         <audio id="ambi" src="assets/audio/ambi.wav">
+        <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
       </a-assets>
 
 
@@ -38,16 +39,27 @@
         back="transparent"
         down="grass"
         up="transparent">
-        <a-entity id="brkon" dynamic-body resonance-audio-src="src:#brkEl; channel:left; alpha:0.5; sharpness: 1; gain: 1; maxDistance: 40;" position="3 20 -2"></a-entity>
-        <a-entity id="strm" dynamic-body resonance-audio-src="src:#brkEl; channel:right; alpha:0.5; sharpness: 1; gain: 1; maxDistance: 40;" position="-3 20 -2"></a-entity>
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonFL" dynamic-body resonance-audio-src="src:#brkEl; channel:left; alpha:0.5; sharpness: 1; gain: 2; sourceWidth: 45; maxDistance: 40;" position="2.5 7 -2.5" rotation="0 -45 0"></a-entity>
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonFR" dynamic-body resonance-audio-src="src:#brkEl; channel:right; alpha:0.5; sharpness: 1; gain: 2; sourceWidth: 45; maxDistance: 40;" position="-2.5 7 -2.5" rotation="0 45 0"></a-entity>
+
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonBL" dynamic-body resonance-audio-src="src:#brkEl; channel:left; alpha:0.5; sharpness: 1; gain: 2; sourceWidth: 45; maxDistance: 40;" position="2.5 7 2.5" rotation="0 -135 0"></a-entity>
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonBR" dynamic-body resonance-audio-src="src:#brkEl; channel:right; alpha:0.5; sharpness: 1; gain: 2; sourceWidth: 45; maxDistance: 40;" position="-2.5 7 2.5" rotation="0 135 0"></a-entity>
       </a-resonance-audio-room>
 
       <a-sky src="#skyL" stereo="eye:left" rotation="0 200 0" geometry="thetaLength:80; thetaStart:50;"></a-sky>
       <a-sky src="#skyR" stereo="eye:right" rotation="0 200 0" geometry="thetaLength:80; thetaStart:50;"></a-sky>
       <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
 
-
-      <a-camera position="0 1.5 0" stereocam="eye:left;"></a-camera>
+      <a-entity id="rig"
+          movement-controls="speed: .03;"
+          position="0 0 0">
+        <a-entity camera
+          position="0 1.6 0"
+          stereocam="eye:left;"
+          look-controls="pointerLockEnabled: true">
+        </a-entity>
+      </a-entity>
+      <!-- <a-camera position="0 1.5 0" stereocam="eye:left;"></a-camera> -->
 
     </a-scene>
   </body>
