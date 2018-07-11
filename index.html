@@ -1,100 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Cinesthesia</title>
+    <title>Testing</title>
     <meta name="description" content="Experience Live Music">
-    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
-    <script src="components/resonance-audio-room.js"></script>
-    <script src="components/resonance-audio-src.js"></script>
-
     <script src="https://unpkg.com/aframe-physics-system@1.4.0/dist/aframe-physics-system.min.js"></script>
+    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
+    <script src="components/noah-RA-room.js"></script>
+    <script src="components/noah-RA-src.js"></script>
 
   </head>
   <body>
-      <a-scene physics>
-        <a-assets>
-          <!-- <audio id="track" src="break.mp3"></audio> -->
-          <!-- <a-asset-item id="speaker1" src="/models/model.glb"></a-asset-item> -->
-          <img id="left" src="assets/img/beartracksL.jpg">
-          <img id="right" src="assets/img/beartracksR.jpg">
 
-        </a-assets>
-        <a-resonance-audio-room
-
-          position="0 0 0"
-          width="40"
-          height="20"
-          depth="40"
-          ambisonic-order="3"
-          speed-of-sound="300"
-          left="transparent"
-          right="transparent"
-          front="transparent"
-          back="transparent"
-          down="grass"
-          up="transparent">
-
-          <a-box id="speaker1"
-            dynamic-body
-            color="#4CC3D9"
-            position="-2 50 -2"
-            rotation="0 45 0"
-            resonance-audio-src="src:assets/audio/break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40;"
-          ></a-box>
-
-          <a-box id="speaker2"
-            dynamic-body
-            color="#4CC3D9"
-            position="2 50 -2"
-            rotation="0 -45 0"
-            resonance-audio-src="src:assets/audio/break.mp3; loop:true; alpha:0.5; sharpness: 1; gain: 10; maxDistance: 40;"
-          ></a-box>
-
-        </a-resonance-audio-room>
-
-        <a-plane material="opacity: 0.0; transparent: true" position="0 -.5 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
-
-        <!-- Sky sphere -->
-        <!-- <a-sky id="skyfull" src="#full" radius="5600" rotation="0 90 0"></a-sky> -->
-        <a-sky id="sky1" src="#left" stereo="eye:left" geometry="thetaLength:60; thetaStart:60;"></a-sky>
-        <a-sky id="sky2" src="#right" stereo="eye:right" geometry="thetaLength:60; thetaStart:60;"></a-sky>
-
-        <a-camera position="0 0 0" stereocam="eye:left;"></a-camera>
-
-      </a-scene>
-
-      <script type="text/javascript">
-        var vrbutton
-        var room = document.querySelector('a-resonance-audio-room')
-        var scene = document.querySelector('a-scene');
-        var ctx
-        // var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-        var iOS = AFRAME.utils.device.isIOS()
-        console.log(iOS);
-        if (iOS) {
-
-          scene.addEventListener('loaded', function () {
-            room.components["resonance-audio-room"].pause()
-            vrbutton = document.querySelector('.a-enter-vr-button')
-            ctx = room.components['resonance-audio-room'].resonanceAudioContext
-            var unlock = function() {
-              ctx.resume()
-              room.components["resonance-audio-room"].update();
-              room.components["resonance-audio-room"].play();
-              vrbutton.removeEventListener('click', unlock);
-            };
-            vrbutton.addEventListener('click', unlock, false);
-
-          }, false);
-
-        }
+    <a-scene physics>
+      <a-assets>
+        <img id='skyL' src='assets/img/beartracksL.jpg'>
+        <img id='skyR' src='assets/img/beartracksR.jpg'>
+        <img id='mandala' src='assets/img/mandala2.jpg'>
+        <img id='gothic' src='assets/img/gothic.jpg'>
+        <audio id="brkEl" src="assets/audio/break.mp3">
+        <audio id="streamEl" src="assets/audio/stream.wav">
+        <audio id="ambi" src="assets/audio/ambi.wav">
+        <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
+      </a-assets>
 
 
-      </script>
+      <a-resonance-audio-room id="room"
+        width="50"
+        height="50"
+        depth="50"
+        ambisonic-order="3"
+        speed-of-sound="300"
+        left="transparent"
+        right="transparent"
+        front="transparent"
+        back="transparent"
+        down="grass"
+        up="transparent">
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonFL" dynamic-body resonance-audio-src="src:#brkEl; channel:left; alpha:0.5; sharpness: 4; sourceWidth: 1; gain: 3; maxDistance: 40;" position="2.5 7 -2.5" rotation="0 -45 0"></a-entity>
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonFR" dynamic-body resonance-audio-src="src:#brkEl; channel:right; alpha:0.5; sharpness: 4; gain: 3; maxDistance: 40;" position="-2.5 7 -2.5" rotation="0 45 0"></a-entity>
 
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonBL" dynamic-body resonance-audio-src="src:#brkEl; channel:left; alpha:0.5; sharpness: 4; gain: 3; maxDistance: 40;" position="2.5 7 2.5" rotation="0 -135 0"></a-entity>
+        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="brkonBR" dynamic-body resonance-audio-src="src:#brkEl; channel:right; alpha:0.5; sharpness: 4; gain: 3; maxDistance: 40;" position="-2.5 7 2.5" rotation="0 135 0"></a-entity>
+      </a-resonance-audio-room>
+
+      <a-sky src="#skyL" stereo="eye:left" rotation="0 200 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
+      <a-sky src="#skyR" stereo="eye:right" rotation="0 200 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
+      <a-sky src="#gothic" geometry="thetaLength:40;"></a-sky>
+      <!-- <a-entity geometry="shape: circle;" radius="5" position="0 1 0" material="src:#mandala"></a-entity> -->
+      <a-circle src="#mandala" roughness= "5" radius="6" position="0 .5 0" rotation="-90 0 0"></a-circle>
+      <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
+      <a-entity light="type: spot; angle: 53; intensity: .9; penumbra: 1; color: #f0e5fc;" position="0 5 0" rotation="-73 0 -55">
+        <a-animation attribute="rotation"
+          easing="linear"
+          dur="5000"
+          from="-73 0 -55"
+          to="-73 360 -55"
+          repeat="indefinite"></a-animation>
+      </a-entity>
+      <a-light type="ambient" intensity=".6"></a-light>
+      <a-entity id="rig"
+          movement-controls="speed: .03;"
+          position="0 0 0">
+        <a-entity camera
+          position="0 1.6 0"
+          stereocam="eye:left;"
+          look-controls="pointerLockEnabled: true">
+        </a-entity>
+      </a-entity>
+      <!-- <a-camera position="0 1.5 0" stereocam="eye:left;"></a-camera> -->
+
+    </a-scene>
   </body>
+
 </html>

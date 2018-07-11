@@ -18,6 +18,8 @@ An app that creates sonic VR environments using Aframe's WebVR tools and Google'
 <li>Allows for multiple audio sources within a room. </li>
 <li>Room options allow changing materials, and dimensions.</li>
 <li>Sound source options include directivity patterns, gain control, maximum distance, autoplay, loop, and selection of audio channel (from a stereo source).</li>
+<li>To instantiate multiple instances of the same audio source, put your audio element under the assets, and reference it with an #id tag.  You can then specify 'left' or 'right' with the 'channel' property.</li>
+<li>For seamless audio loops, include your url directly onto the source entity within the room. Some devices create a gap when using the audio asset as the source.  This method avoids that. </li>
 </ul>
 
 ## TBD
@@ -27,4 +29,5 @@ An app that creates sonic VR environments using Aframe's WebVR tools and Google'
 <li>Have not yet tested live updating of sound attributes. </li>
 <li>There is limited documentation from Google on directivity patterns, so I'm unclear exactly how those properties are affecting the sound, and it's relation with object orientation. </li>
 <li>Sometimes the physics modeling causes the speakers to drop through the floor and into the pits of hell... Just refresh the page. </li>
+<li>Need to include documentation.  In the meantime, look at this demo as a resource. </li>
 </ul>
