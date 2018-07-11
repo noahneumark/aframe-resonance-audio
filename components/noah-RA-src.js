@@ -46,7 +46,15 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.setMediaSrc (this.data.src)
   },
 
-  update () {
+  update (oldData) {
+    // Need to test update upon attribute changes.
+    if (!this.initialPlay) {
+      if (oldData.src !== this.data.src) {
+        this.setMediaSrc(this.data.src)
+      } else {
+        this.setupSource()
+      }
+    }
   },
 
   exposeAPI () {

@@ -1,5 +1,5 @@
 /* global AFRAME AudioContext */
-
+let room = {}
 const log = AFRAME.utils.debug
 const warn = log('components:resonance-audio-room:warn')
 
@@ -98,6 +98,8 @@ AFRAME.registerComponent('resonance-audio-room', {
       up: this.data.up
     }
     this.resonanceAudioScene.setRoomProperties(dimensions, materials)
+    console.log(this.resonanceAudioScene);
+    room = this.resonanceAudioScene
     this.setPosition()
   },
 
