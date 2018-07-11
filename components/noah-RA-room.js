@@ -1,5 +1,5 @@
 /* global AFRAME AudioContext */
-let room = {}
+let roomObj
 const log = AFRAME.utils.debug
 const warn = log('components:resonance-audio-room:warn')
 
@@ -21,7 +21,11 @@ AFRAME.registerComponent('resonance-audio-room', {
     front: {default: 'brick-bare', oneOf: RESONANCE_MATERIAL},
     back: {default: 'brick-bare', oneOf: RESONANCE_MATERIAL},
     down: {default: 'brick-bare', oneOf: RESONANCE_MATERIAL},
-    up: {default: 'brick-bare', oneOf: RESONANCE_MATERIAL}
+    up: {default: 'brick-bare', oneOf: RESONANCE_MATERIAL},
+    src: {type: 'string', default: ''},
+    loop: {type: 'boolean', default: true},
+    autoplay: {type: 'boolean', default: true},
+    gain: {type: 'number', default: 1}
   },
 
   init : function () {
@@ -29,6 +33,7 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.roomSetup = this.roomSetup.bind(this)
     this.handleLockedResume = this.handleLockedResume.bind(this)
     this.handleLockedPlay = this.handleLockedPlay.bind(this)
+    this.connectBuffer = this.connectBuffer.bind(this)
 
     var sceneEl = this.el.sceneEl
     this.builtInGeometry = true
@@ -57,6 +62,9 @@ AFRAME.registerComponent('resonance-audio-room', {
 
   update : function (oldData){
     this.roomSetup()
+    if (this.data.src && this.data.src !== oldData.src) {
+      this.setAmbisonicSource(this.data.src)
+    }
   },
 
   tick () {
@@ -98,9 +106,77 @@ AFRAME.registerComponent('resonance-audio-room', {
       up: this.data.up
     }
     this.resonanceAudioScene.setRoomProperties(dimensions, materials)
-    console.log(this.resonanceAudioScene);
-    room = this.resonanceAudioScene
+
     this.setPosition()
+  },
+
+  disconnectPreviousSrc () {
+    if (this.connectedSrc) {
+      this.ambisonicSourceNode.disconnect(this.resonanceAudioScene.ambisonicInput)
+      delete this.ambisonicSourceNode
+      this.connectedSrc = false
+    }
+  },
+
+  setAmbisonicSource (src) {
+    this.disconnectPreviousSrc()
+    var self = this
+    // Simplified asset parsing, similar to the one used by A-Frame.
+    if (typeof src !== 'string') { throw new TypeError('invalid src') }
+    // For src connected to audio asset with #id reference
+    if (src.charAt(0) === '#') {
+      const el = document.querySelector(src)
+      if (!el) { throw new Error('invalid src') }
+      src = el.getAttribute('src')
+      this.data.src = src
+    }
+    if (src === '' || typeof src == 'undefined') { return }
+    fetch(src, {mode: "cors"}).then(function(resp) {return resp.arrayBuffer()})
+    .then(function (buffer) {
+      self.resonanceAudioContext.decodeAudioData(buffer, function (audioData) {
+        self.bufferNode = self.resonanceAudioContext.createBufferSource()
+        self.bufferNode.buffer = audioData;
+        self.connectBuffer()
+      })
+    })
+    .catch((err)=>{console.log(err);})
+
+  },
+
+  connectBuffer() {
+    //Create 4 channel splitter
+    this.splitter = this.resonanceAudioContext.createChannelSplitter(4);
+    //Connect bufferNode to splitter
+    this.bufferNode.connect(this.splitter)
+    //Create merger as ambisonicSourceNode
+    this.ambisonicSourceNode = this.resonanceAudioContext.createChannelMerger()
+    //Connect splitter to ambisonicSourceNode
+    this.splitter.connect(this.ambisonicSourceNode, 0, 0)
+    this.splitter.connect(this.ambisonicSourceNode, 1, 1)
+    this.splitter.connect(this.ambisonicSourceNode, 2, 2)
+    this.splitter.connect(this.ambisonicSourceNode, 3, 3)
+
+    //Setup ambisonicInput to receive source
+    this.resonanceAudioScene.ambisonicInput.channelInterpretation = "discrete"
+    this.resonanceAudioScene.ambisonicInput.channelCountMode = "clamped-max"
+    this.resonanceAudioScene.ambisonicInput.channelCount = 4
+
+    //Connect ambisonicSourceNode to ambisonicInput
+    this.ambisonicSourceNode.connect(this.resonanceAudioScene.ambisonicInput)
+
+    this.resonanceAudioScene.ambisonicInput.gain.value = this.data.gain
+
+    if (this.data.loop) {
+      this.bufferNode.loop = true
+    }
+    if (this.data.autoplay && this.resonanceAudioContext.state === "running") {
+      this.playSound()
+    }
+    this.connectedSrc = true
+  },
+
+  playSound() {
+    this.bufferNode.start()
   },
 
   setPosition () {
@@ -117,6 +193,9 @@ AFRAME.registerComponent('resonance-audio-room', {
 
   handleLockedPlay () {
     document.body.removeEventListener('touchend', this.handleLockedPlay)
+    if (this.connectedSrc) {
+      this.playSound()
+    }
     const children = this.el.getChildren()
     children.forEach(function (child, i) {
       const components = child.components
@@ -146,6 +225,10 @@ AFRAME.registerPrimitive('a-resonance-audio-room', {
     front: 'resonance-audio-room.front',
     back: 'resonance-audio-room.back',
     down: 'resonance-audio-room.down',
-    up: 'resonance-audio-room.up'
+    up: 'resonance-audio-room.up',
+    src: 'resonance-audio-room.src',
+    loop: 'resonance-audio-room.loop',
+    autoplay: 'resonance-audio-room.autoplay',
+    gain: 'resonance-audio-room.gain'
   }
 })
