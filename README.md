@@ -1,6 +1,6 @@
 # What is this?
 
-An app that creates sonic VR environments using Aframe's WebVR tools and Google's Resonance Audio engine.  I have vastly extended the two previous ResonanceAudio Aframe components to be more flexible and with access to more of Google's API.  In this demo, you enter a room surrounded by four speakers. Left right in front, and left right in back.  As you move around, you can hear the sound change based on your positioning.  The audio engine utilizes realistic ambisonic surround rendering.
+An app that creates sonic VR environments using Aframe's WebVR tools and Google's Resonance Audio engine.  I have vastly extended and re-written the two previous ResonanceAudio Aframe components to be more flexible and with access to more of Google's API including ambisonic audio source input.  In this demo, you enter a room with two speakers playing a left and a right channel of audio.  You also hear restaurant chatter around you.  As you move around, you can hear the sound change based on your positioning.  The audio engine utilizes realistic ambisonic surround rendering.
 
 <br>[A-Frame](https://aframe.io)
 <br>[ResonanceAudio](https://developers.google.com/resonance-audio/)
