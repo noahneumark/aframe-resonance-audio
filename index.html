@@ -51,10 +51,14 @@
       <a-sky src="#skyR" stereo="eye:right" rotation="0 200 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
       <a-sky src="#gothic" geometry="thetaLength:40;"></a-sky>
 
-      <a-circle src="#mandala" roughness= "5" radius="6" position="0 .5 0" rotation="-90 0 0"></a-circle>
+      <a-circle src="#mandala" radius="6" position="0 .5 0" rotation="-90 0 0"></a-circle>
       <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
 
-      <a-entity light="type: spot; angle: 53; intensity: .9; penumbra: 1; color: #f0e5fc;" position="0 5 0" rotation="-73 0 -55">
+      <a-entity light="type: spot; angle: 53; intensity: .9; penumbra: 1; color: #f0e5fc;"
+        position="0 5 0"
+        rotation="-73 0 -55">
+        <!-- code for when animation primitive becomes depricated -->
+        <!-- animation="property:rotation; easing:linear; dur:5000; from:-73 0 -55; to: -73 360 -55; repeat: indefinite;" -->
         <a-animation attribute="rotation"
           easing="linear"
           dur="5000"
