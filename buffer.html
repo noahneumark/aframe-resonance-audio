@@ -3,50 +3,103 @@
   <head>
     <meta charset="utf-8">
     <title>Buffer Test</title>
+    <script src="music-tempo.min.js"></script>
   </head>
   <body>
     <button type="button" name="button">Play/Stop</button>
+    <h1 id='curTime'>Context Time: 0</h1>
+    <h1 id='audTime'>Audio Time: 0</h1>
     <script type="text/javascript">
+
       var AudioContext = window.AudioContext || window.webkitAudioContext;
+      var ctxTimeEl = document.querySelector('#curTime')
+      var audTimeEl = document.querySelector('#audTime')
       var actx = new AudioContext(),
-      src = "/assets/audio/stream.wav",
-      audioData, srcNode;  // global so we can access them from handlers
+      src = "/assets/audio/wind.mp3",
+      audioData, srcNode, timeDisplay, audioEl, beatIdx = 0, mt;  // global so we can access them from handlers
+
+
 
       // Load some audio (CORS need to be allowed or we won't be able to decode the data)
       fetch(src, {mode: "cors"}).then(function(resp) {return resp.arrayBuffer()}).then(decode);
 
       // Decode the audio file, then start the show
       function decode(buffer) {
-        actx.decodeAudioData(buffer, playLoop);
+        ctxTimeEl.innerHTML = "Context Time: Loading..."
+        audTimeEl.innerHTML = "Audio Time: Loading..."
+        actx.decodeAudioData(buffer, initAudio);
       }
 
-      // Sets up a new source node as needed as stopping will render current invalid
-      function playLoop(abuffer) {
-        if (!audioData) {
-          audioData = abuffer; // create a reference for control buttons
+      function initAudio(abuffer) {
+        audioEl = document.createElement('audio')
+        audioEl.src = src
+        document.body.appendChild(audioEl)
+        srcNode = actx.createMediaElementSource(audioEl)
+        srcNode.connect(actx.destination);
+
+        //Get Tempo data
+        var audioArr = []
+        if (abuffer.numberOfChannels == 2) {
+          var channel1Data = abuffer.getChannelData(0);
+          var channel2Data = abuffer.getChannelData(1);
+          var length = channel1Data.length;
+          for (var i = 0; i < length; i++) {
+            audioArr[i] = (channel1Data[i] + channel2Data[i]) / 2;
+          }
+        } else {
+          audioArr = buffer.getChannelData(0);
         }
-        srcNode = actx.createBufferSource();  // create audio source
-        srcNode.buffer = abuffer;             // use decoded buffer
-        srcNode.connect(actx.destination);    // create output
-        srcNode.loop = true;                  // takes care of perfect looping
-        srcNode.start();                      // play...
+        mt = new MusicTempo(audioArr);
+
+        audioEl.play()
+
+        console.log(mt);
+        console.log(srcNode);
+        displayTime()
+        runBeep()
       }
 
       // Simple example control
       document.querySelector("button").onclick = function() {
-      if (srcNode) {
-        srcNode.stop();
-        srcNode = null;
-        this.innerText = "Play";
-      } else {
-        playLoop(audioData);
-        this.innerText = "Stop";
-      }
+        if (actx.state === "running") {
+          actx.suspend()
+          this.innerText = "Play";
+          clearInterval(timeDisplay)
+
+        } else {
+          actx.resume()
+          this.innerText = "Pause";
+          displayTime()
+          runBeep()
+        }
       };
 
-      document.body.onclick = function() {
-        actx.resume()
+      function displayTime () {
+        if (actx) {
+          timeDisplay = setInterval(()=>{
+            ctxTimeEl.innerHTML = "Context Time: " + actx.currentTime
+            audTimeEl.innerHTML = "Audio Time: " + Math.abs(audioEl.currentTime - mt.beats[beatIdx])
+          }, 100)
+        }
       }
+
+      function runBeep () {
+        setInterval(()=>{
+          if (Math.abs(audioEl.currentTime - mt.beats[beatIdx]) < .02) {
+            var beep = actx.createOscillator()
+            var gain = actx.createGain()
+            gain.gain.value = .1
+            beep.type = "square"
+            beep.connect(gain);
+            gain.connect(actx.destination)
+            beep.start(actx.currentTime)
+            beep.stop(actx.currentTime + .04)
+            beatIdx ++
+          }
+        }, 10)
+      }
+
+
     </script>
   </body>
 </html>
