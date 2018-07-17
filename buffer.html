@@ -15,7 +15,7 @@
       var ctxTimeEl = document.querySelector('#curTime')
       var audTimeEl = document.querySelector('#audTime')
       var actx = new AudioContext(),
-      src = "/assets/audio/wind.mp3",
+      src = "/assets/audio/love.mp3",
       audioData, srcNode, timeDisplay, audioEl, beatIdx = 0, mt;  // global so we can access them from handlers
 
 
@@ -26,7 +26,7 @@
       // Decode the audio file, then start the show
       function decode(buffer) {
         ctxTimeEl.innerHTML = "Context Time: Loading..."
-        audTimeEl.innerHTML = "Audio Time: Loading..."
+        audTimeEl.innerHTML = "Tolerance Delta Time: Loading..."
         actx.decodeAudioData(buffer, initAudio);
       }
 
@@ -78,7 +78,7 @@
         if (actx) {
           timeDisplay = setInterval(()=>{
             ctxTimeEl.innerHTML = "Context Time: " + actx.currentTime
-            audTimeEl.innerHTML = "Audio Time: " + Math.abs(audioEl.currentTime - mt.beats[beatIdx])
+            audTimeEl.innerHTML = "Tolerance Delta Time: " + Math.abs(audioEl.currentTime - mt.beats[beatIdx])
           }, 100)
         }
       }

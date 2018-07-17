@@ -8,10 +8,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-system@1.4.0/dist/aframe-physics-system.min.js"></script>
-    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
+    <script src="https://rawgit.com/ngokevin/kframe/master/components/animation/dist/aframe-animation-component.min.js"></script>
     <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
     <script src="components/noah-RA-room.js"></script>
     <script src="components/noah-RA-src.js"></script>
+    <script src="components/noah-RA-beatSync.js"></script>
+    <script src="music-tempo.min.js"></script>
 
   </head>
   <body>
@@ -22,27 +25,22 @@
         <img id='skyR' src='assets/img/beartracksR.jpg'>
         <img id='mandala' src='assets/img/mandala.jpg'>
         <img id='gothic' src='assets/img/gothic.jpg'>
-        <audio id="song" src="assets/audio/negado.wav">
+        <audio id="song" src="assets/audio/almost.mp3">
         <audio id="ambi" src="assets/audio/ambi.wav">
         <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
       </a-assets>
 
-      <a-resonance-audio-room id="room"
-        width="50"
-        height="50"
-        depth="50"
-        ambisonic-order="1"
-        src="#ambi"
-        gain="3"
-        speed-of-sound="300"
-        left="transparent"
-        right="transparent"
-        front="transparent"
-        back="transparent"
-        down="grass"
-        up="transparent">
-        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songFL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 5; gain: .3; maxDistance: 40;" position="2.5 1.5 -2.5" rotation="0 -45 0"></a-entity>
-        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songFR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 5; gain: .3; maxDistance: 40;" position="-2.5 1.5 -2.5" rotation="0 45 0"></a-entity>
+      <a-box id="mybox" position="0 1 -2" rotation="0 45 0" color="rgb(208, 117, 151)"
+      animation="property: color; dir: alternate; dur: 90; easing:
+        easeInSine; from:rgb(200, 54, 54); to: rgb(28, 0, 255); startEvents: colorchange;"
+      animation__rot="property: rotation; dur: 90; from: 0 -45 0; to: 0 -40 0; startEvents: rotatean">
+      </a-box>
+
+      <a-resonance-audio-room id="room" width="50" height="50" depth="50" ambisonic-order="1"
+        src="#ambi" gain="3" speed-of-sound="300" left="transparent" right="transparent"
+        front="transparent" back="transparent" down="grass" up="transparent">
+        <a-entity beat-sync__color="target:#mybox; event:colorchange" gltf-model="#speaker" scale="0.06 0.06 0.06" id="songFL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 5; gain: .3; maxDistance: 40;" position="2.5 1.5 -2.5" rotation="0 -45 0"></a-entity>
+        <a-entity beat-sync__rotate="target:#mybox; event:rotatean" gltf-model="#speaker" scale="0.06 0.06 0.06" id="songFR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 5; gain: .3; maxDistance: 40;" position="-2.5 1.5 -2.5" rotation="0 45 0"></a-entity>
         <!-- <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="2.5 1.5 2.5" rotation="0 -135 0"></a-entity>
         <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="-2.5 1.5 2.5" rotation="0 135 0"></a-entity> -->
       </a-resonance-audio-room>
@@ -56,15 +54,8 @@
 
       <a-entity light="type: spot; angle: 53; intensity: .9; penumbra: 1; color: #f0e5fc;"
         position="0 5 0"
-        rotation="-73 0 -55">
-        <!-- code for when animation primitive becomes depricated -->
-        <!-- animation="property:rotation; easing:linear; dur:5000; from:-73 0 -55; to: -73 360 -55; repeat: indefinite;" -->
-        <a-animation attribute="rotation"
-          easing="linear"
-          dur="5000"
-          from="-73 0 -55"
-          to="-73 360 -55"
-          repeat="indefinite"></a-animation>
+        rotation="-73 0 -55"
+        animation="property:rotation; easing:linear; dur:5000; from:-73 0 -55; to: -73 360 -55; loop: true;">
       </a-entity>
       <a-light type="ambient" intensity=".6"></a-light>
 
