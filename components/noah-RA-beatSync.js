@@ -92,6 +92,7 @@ AFRAME.registerComponent('beat-sync', {
 
   emitEvent () {
     if (this.resonanceAudioContext.state === "running" && this.audioEl.beatData && this.audioEl.beatData !== "loading") {
+      //emit event preceding beat by threshold amount.  Account for audio processing latency.
       if (this.audioEl.beatData.beats[this.beatIdx] - this.audioEl.currentTime < .15) {
         this.target.emit(this.data.event)
         this.beatIdx ++
@@ -101,6 +102,10 @@ AFRAME.registerComponent('beat-sync', {
 
 
   tick: function () {
+    //reset when song starts
+    if (this.audioEl.currentTime === 0) {
+      this.beatIdx = 0
+    }
     this.throttledFunction();  // Called once a second.
   }
 
