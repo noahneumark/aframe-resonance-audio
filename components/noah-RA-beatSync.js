@@ -86,14 +86,27 @@ AFRAME.registerComponent('beat-sync', {
       }
       self.audioEl.beatData = new MusicTempo(audioArr);
       self.resonanceAudioContext.resume()
-      console.log(self.audioEl.beatData);
+      if (self.room.connectedSrc) {
+        self.room.playSound()
+      }
     }
   },
 
   emitEvent () {
     if (this.resonanceAudioContext.state === "running" && this.audioEl.beatData && this.audioEl.beatData !== "loading") {
+
+      //reset index at beginning of song
+      if (this.audioEl.currentTime < this.audioEl.beatData.beats[0]) {
+        this.beatIdx = 0
+      }
+      //correct course if current song time gets ahead of beat index
+      else if (this.audioEl.currentTime > this.audioEl.beatData.beats[this.beatIdx]) {
+        this.beatIdx = this.audioEl.beatData.beats.findIndex((beat, i) => {
+          return (beat-this.audioEl.currentTime < beat - this.audioEl.beatData.beats[i-1] && beat-this.audioEl.currentTime > 0)
+        })
+      }
       //emit event preceding beat by threshold amount.  Account for audio processing latency.
-      if (this.audioEl.beatData.beats[this.beatIdx] - this.audioEl.currentTime < .15) {
+      if (this.audioEl.beatData.beats[this.beatIdx] - this.audioEl.currentTime < .1) {
         this.target.emit(this.data.event)
         this.beatIdx ++
       }
@@ -102,10 +115,6 @@ AFRAME.registerComponent('beat-sync', {
 
 
   tick: function () {
-    //reset when song starts
-    if (this.audioEl.currentTime === 0) {
-      this.beatIdx = 0
-    }
     this.throttledFunction();  // Called once a second.
   }
 
