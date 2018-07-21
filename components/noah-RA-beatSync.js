@@ -42,8 +42,7 @@ AFRAME.registerComponent('beat-sync', {
     }
   },
 
-  update () {
-
+  update (oldData) {
   },
 
   setUpTarget () {
@@ -152,6 +151,16 @@ AFRAME.registerComponent('beat-sync', {
               return (currentTime < div)
             }
             nextEmit = this.beatDivisions.find(findDivision)
+          }
+        } else {
+          if (this.beatIdx === 0) {
+            nextEmit = this.audioEl.beatData.beats[0]
+          } else {
+            if (this.beatIdx%this.data.frequency === 0){
+              nextEmit = this.audioEl.beatData.beats[this.beatIdx]
+            } else {
+              nextEmit = 0
+            }
           }
         }
         //emit event preceding beat by threshold amount.  Account for audio processing latency. Skip if on offbeat.
