@@ -35,6 +35,7 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.el.parentEl.addEventListener('loaded', this.postLoadInit.bind(this))
     this.exposeAPI()
     this.initialPlay = true
+    this.throttledFunction = AFRAME.utils.throttle(this.setPosition, 40, this);
   },
 
   postLoadInit () {
@@ -239,9 +240,8 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   tick () {
-    if (this.resonanceAudioSceneSource) { //Safe from asynch calls
-      this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)
-    }
+    //runs setPosition throttled for better performance
+    this.throttledFunction()
   },
 
   remove () {
@@ -250,7 +250,9 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   setPosition () {
-    this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)
+    if (this.resonanceAudioSceneSource) { //Safe from asynch calls
+      this.resonanceAudioSceneSource.setFromMatrix(this.el.object3D.matrixWorld)
+    }
   },
 
 })

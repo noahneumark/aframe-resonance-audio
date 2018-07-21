@@ -35,6 +35,8 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.handleLockedPlay = this.handleLockedPlay.bind(this)
     this.connectBuffer = this.connectBuffer.bind(this)
 
+    this.throttledFunction = AFRAME.utils.throttle(this.setListener, 50, this);
+
     var sceneEl = this.el.sceneEl
     this.builtInGeometry = true
     this.cameraMatrix4 = new AFRAME.THREE.Matrix4()
@@ -68,12 +70,18 @@ AFRAME.registerComponent('resonance-audio-room', {
   },
 
   tick () {
-    const cameraEl = this.el.sceneEl.camera.el
-    this.cameraMatrix4 = cameraEl.object3D.matrixWorld
+    this.throttledFunction()
+
   },
 
   // update resonanceAudioScene after room is tocked
   tock () {
+
+  },
+
+  setListener () {
+    const cameraEl = this.el.sceneEl.camera.el
+    this.cameraMatrix4 = cameraEl.object3D.matrixWorld
     this.resonanceAudioScene.setListenerFromMatrix(this.cameraMatrix4)
   },
 

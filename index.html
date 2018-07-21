@@ -2,24 +2,23 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Testing</title>
+    <title>Experience Live Music</title>
     <meta name="description" content="Experience Live Music">
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
-    <script src="https://unpkg.com/aframe-physics-system@1.4.0/dist/aframe-physics-system.min.js"></script>
+
     <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://rawgit.com/ngokevin/kframe/master/components/animation/dist/aframe-animation-component.min.js"></script>
     <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
     <script src="components/noah-RA-room.js"></script>
     <script src="components/noah-RA-src.js"></script>
     <script src="components/noah-RA-beatSync.js"></script>
-    <script src="music-tempo.min.js"></script>
 
   </head>
   <body>
 
-    <a-scene physics>
+    <a-scene>
       <a-assets>
         <img id='skyL' src='assets/img/beartracksL.jpg'>
         <img id='skyR' src='assets/img/beartracksR.jpg'>
@@ -30,17 +29,37 @@
         <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
       </a-assets>
 
-      <a-box id="mybox" position="0 1 -2" rotation="0 45 0" color="rgb(208, 117, 151)"
+      <!-- <a-box id="mybox" position="0 1 -2" rotation="0 45 0" color="rgb(208, 117, 151)"
       animation="property: color; dir: alternate; dur: 90; easing:
         easeInSine; from:rgb(200, 54, 54); to: rgb(28, 0, 255); startEvents: colorchange;"
       animation__rot="property: rotation; dur: 90; from: 0 -45 0; to: 0 -40 0; startEvents: rotatean">
-      </a-box>
+      </a-box> -->
 
+      <!-- <a-box id="mybox" position="0 1 -2" rotation="0 45 0" color="rgb(208, 117, 151)">
+        <a-animation attribute="color" dur="90" from="rgb(200, 54, 54)" to="rgb(28, 0, 255)" begin="colorchange"></a-animation>
+      </a-box> -->
+
+      <!-- <a-box sound="src: #song; autoplay: true;"
+        position="0 1 2"
+        beat-sync__color="target:#mybox; event:colorchange">
+      </a-box> -->
       <a-resonance-audio-room id="room" width="50" height="50" depth="50" ambisonic-order="1"
-        src="#ambi" gain="3" speed-of-sound="300" left="transparent" right="transparent"
+        gain="3" speed-of-sound="300" left="transparent" right="transparent"
         front="transparent" back="transparent" down="grass" up="transparent">
-        <a-entity beat-sync__color="target:#mybox; event:colorchange" gltf-model="#speaker" scale="0.06 0.06 0.06" id="songFL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 5; gain: .3; maxDistance: 40;" position="2.5 1.5 -2.5" rotation="0 -45 0"></a-entity>
-        <a-entity beat-sync__rotate="target:#mybox; event:rotatean" gltf-model="#speaker" scale="0.06 0.06 0.06" id="songFR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 5; gain: .3; maxDistance: 40;" position="-2.5 1.5 -2.5" rotation="0 45 0"></a-entity>
+        <a-entity
+          id="songFL"
+          beat-sync__rotateL="target:#songFL; event:rotateL; frequency: .33;"
+          beat-sync__rotateR="target:#songFR; event:rotateR"
+          animation__rot="property: rotation; dur: 60; from: 0 45 0; to: 0 35 0; startEvents: rotateL"
+          gltf-model="#speaker" scale="0.06 0.06 0.06"
+          resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 2; gain: 1; maxDistance: 40;"
+          position="-2.5 1.2 -2.5" rotation="0 45 0"></a-entity>
+        <a-entity
+        id="songFR"
+        gltf-model="#speaker" scale="0.06 0.06 0.06"
+        animation__rot="property: rotation; dur: 90; from: 0 -45 0; to: 0 -35 0; startEvents: rotateR"
+        resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 2; gain: 1; maxDistance: 40;"
+        position="2.5 1.2 -2.5" rotation="0 -45 0"></a-entity>
         <!-- <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="2.5 1.5 2.5" rotation="0 -135 0"></a-entity>
         <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="-2.5 1.5 2.5" rotation="0 135 0"></a-entity> -->
       </a-resonance-audio-room>
@@ -60,7 +79,7 @@
       <a-light type="ambient" intensity=".6"></a-light>
 
       <a-entity id="rig"
-          movement-controls="speed: .03;"
+          movement-controls="speed: .05;"
           position="0 0 0">
         <a-entity camera
           position="0 1.6 0"
