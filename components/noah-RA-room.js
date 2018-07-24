@@ -36,18 +36,30 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.connectBuffer = this.connectBuffer.bind(this)
 
     this.throttledFunction = AFRAME.utils.throttle(this.setListener, 50, this);
-
+    this.isUnlocked = true
     var sceneEl = this.el.sceneEl
     this.builtInGeometry = true
     this.cameraMatrix4 = new AFRAME.THREE.Matrix4()
-    this.resonanceAudioContext = new AudioContext()
+    this.resonanceAudioContext = new AudioContext({latencyHint:"playback"})
     this.resonanceAudioScene = new ResonanceAudio(this.resonanceAudioContext)
     this.resonanceAudioScene.output.connect(this.resonanceAudioContext.destination)
-    if (this.resonanceAudioContext.state === "suspended"){
+    console.log(this.resonanceAudioContext.state);
+    if (this.resonanceAudioContext.state === "suspended" || navigator.vendor === "Apple Computer, Inc."){
+      let isDesktopSafari = false
+      this.isUnlocked = false
+      if (navigator.platform !== "iPhone"){
+        isDesktopSafari = true
+        this.startEvent = "keypress"
+        this.endEvent = "keypress"
+      } else {
+        this.startEvent = "touchstart"
+        this.endEvent = "touchend"
+      }
+      console.log('add click inst');
       //add click instructions
       var clickForAudioEl = document.createElement('a-entity')
       clickForAudioEl.setAttribute('text', {
-        value: 'Click for Audio',
+        value: isDesktopSafari ? 'Press Any Key' : 'Click for Audio',
         geometry: 'plane',
         align: 'center',
         color: 'red'
@@ -57,8 +69,8 @@ AFRAME.registerComponent('resonance-audio-room', {
       var camera = document.querySelector('[camera]')
       camera.appendChild(clickForAudioEl)
       //initiate and unlock audio
-      document.body.addEventListener('touchstart', this.handleLockedResume)
-      document.body.addEventListener('touchend', this.handleLockedPlay)
+      document.body.addEventListener(this.startEvent, this.handleLockedResume)
+      document.body.addEventListener(this.endEvent, this.handleLockedPlay)
     }
   },
 
@@ -192,15 +204,16 @@ AFRAME.registerComponent('resonance-audio-room', {
   },
 
   handleLockedResume () {
-    document.body.removeEventListener('touchstart', this.handleLockedResume)
+    document.body.removeEventListener(this.startEvent, this.handleLockedResume)
     var camera = document.querySelector('[camera]')
     camera.removeChild(this.clickForAudioEl)
     const cxt = this.resonanceAudioContext
     cxt.resume()
+    this.isUnlocked = true
   },
 
   handleLockedPlay () {
-    document.body.removeEventListener('touchend', this.handleLockedPlay)
+    document.body.removeEventListener(this.endEvent, this.handleLockedPlay)
     if (this.connectedSrc) {
       this.playSound()
     }

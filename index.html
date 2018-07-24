@@ -24,8 +24,8 @@
         <img id='skyR' src='assets/img/beartracksR.jpg'>
         <img id='mandala' src='assets/img/mandala.jpg'>
         <img id='gothic' src='assets/img/gothic.jpg'>
-        <audio id="song" src="assets/audio/almost.mp3">
-        <audio id="ambi" src="assets/audio/ambi.wav">
+        <audio id="song" src="assets/audio/test.mp3">
+        <!-- <audio id="ambi" src="assets/audio/ambi.wav"> -->
         <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
       </a-assets>
 
@@ -49,16 +49,17 @@
         <a-entity
           id="songFL"
           beat-sync__rotateL="target:#songFL; event:rotateL; frequency: 2;"
-          beat-sync__rotateR="target:#songFR; event:rotateR"
+          beat-sync__rotateR="target:#songFR; event:rotateR; pattern: 1, 1, 1, 0;"
+          beat-sync__spotlight="target:#spotlight; event:spotlight; frequency: 4;"
           animation__rot="property: rotation; dur: 60; from: 0 45 0; to: 0 35 0; startEvents: rotateL"
           gltf-model="#speaker" scale="0.06 0.06 0.06"
-          resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 2; gain: 1; maxDistance: 40;"
+          resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
           position="-2.5 1.2 -2.5" rotation="0 45 0"></a-entity>
         <a-entity
         id="songFR"
         gltf-model="#speaker" scale="0.06 0.06 0.06"
         animation__rot="property: rotation; dur: 90; from: 0 -45 0; to: 0 -35 0; startEvents: rotateR"
-        resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 2; gain: 1; maxDistance: 40;"
+        resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
         position="2.5 1.2 -2.5" rotation="0 -45 0"></a-entity>
         <!-- <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="2.5 1.5 2.5" rotation="0 -135 0"></a-entity>
         <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="-2.5 1.5 2.5" rotation="0 135 0"></a-entity> -->
@@ -71,10 +72,10 @@
       <a-circle src="#mandala" radius="6" position="0 .5 0" rotation="-90 0 0"></a-circle>
       <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
 
-      <a-entity light="type: spot; angle: 53; intensity: .9; penumbra: 1; color: #f0e5fc;"
+      <a-entity id="spotlight" light="type: spot; angle: 43; intensity: .9; penumbra: .3; color: rgb(252, 34, 34);"
         position="0 5 0"
         rotation="-73 0 -55"
-        animation="property:rotation; easing:linear; dur:5000; from:-73 0 -55; to: -73 360 -55; loop: true;">
+        animation="property:rotation; easing:linear; dur:2500; from:-73 0 -55; to: -73 360 -55; startEvents: spotlight;">
       </a-entity>
       <a-light type="ambient" intensity=".6"></a-light>
 

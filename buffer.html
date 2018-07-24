@@ -6,9 +6,10 @@
     <script src="music-tempo.min.js"></script>
   </head>
   <body>
-    <button type="button" name="button">Play/Stop</button>
+    <button type="button" name="button">Play</button>
     <h1 id='curTime'>Context Time: 0</h1>
     <h1 id='audTime'>Audio Time: 0</h1>
+    <audio id="song" src='/assets/audio/love.mp3'></audio>
     <script type="text/javascript">
 
       var AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -31,9 +32,7 @@
       }
 
       function initAudio(abuffer) {
-        audioEl = document.createElement('audio')
-        audioEl.src = src
-        document.body.appendChild(audioEl)
+        audioEl = document.querySelector("audio")
         srcNode = actx.createMediaElementSource(audioEl)
         srcNode.connect(actx.destination);
 
@@ -50,24 +49,39 @@
           audioArr = buffer.getChannelData(0);
         }
         mt = new MusicTempo(audioArr);
+        ctxTimeEl.innerHTML = "Context Time: Loaded"
+        audTimeEl.innerHTML = "Tolerance Delta Time: Loaded"
 
-        audioEl.play()
+        // if (actx.state "running") {
+        //   audioEl.play()
+        // }
+        // console.log(mt);
+        // console.log(srcNode);
+        // displayTime()
+        // runBeep()
+      }
 
-        console.log(mt);
-        console.log(srcNode);
-        displayTime()
-        runBeep()
+      document.querySelector("button").onmousedown = () => {
+        if (actx.state === "suspended") {
+          actx.resume()
+        }
       }
 
       // Simple example control
-      document.querySelector("button").onclick = function() {
-        if (actx.state === "running") {
+      document.querySelector("button").onmouseup = function() {
+        if (this.innerText === "Pause") {
           actx.suspend()
           this.innerText = "Play";
           clearInterval(timeDisplay)
 
-        } else {
-          actx.resume()
+        }
+        else {
+          if (!actx.state === "running") {
+            actx.resume()
+          }
+          if (audioEl.paused) {
+            audioEl.play()
+          }
           this.innerText = "Pause";
           displayTime()
           runBeep()
