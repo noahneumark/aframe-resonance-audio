@@ -42,6 +42,10 @@ AFRAME.registerComponent('beat-sync', {
     }
   },
 
+  tick: function () {
+    this.throttledFunction();
+  },
+
   update (oldData) {
   },
 
@@ -86,63 +90,7 @@ AFRAME.registerComponent('beat-sync', {
     }
   },
 
-  getBeats() {
-    const startBufferTime = performance.now()
-    console.log('getting beats');
-    let request = new XMLHttpRequest();
-        request.open('GET', this.audioEl.getAttribute('src'), true);
-        request.responseType = 'arraybuffer'
-    request.onerror = e => {console.log(e)}
-    request.ontimeout = e => {console.log(e)}
-    request.onload = () => {
-      console.log('getting beats...');
-      if (this.audioContext.state === "running") {
-        this.sourceType === "resAudio" ?
-          this.audioEl.pause() :
-          this.el.components.sound.pauseSound();
-      }
-      // const offline = new OfflineAudioContext(1, request.response.byteLength, 44100);
-      //Decode the audio file, then pass to worker to process beat data
-      this.audioContext.decodeAudioData(request.response, decBuffer =>{
-        console.log(`Decode Buffer Time: ${performance.now()-startBufferTime}`);
-        //for slower devices pause the VR scene
-        if (performance.now()-startBufferTime > 2500) {
-          this.el.sceneEl.pause()
-        }
-        const startGetBeatsTime = performance.now()
-        const worker = new Worker(URL.createObjectURL(new Blob([`(${workerFn})()`], {
-          type: "text/javascript"
-        })))
 
-        worker.postMessage({buffer: decBuffer.getChannelData(0)})
-        decBuffer = null
-        worker.onerror = e => {
-          console.log(e);
-        }
-        worker.onmessage = e => {
-          //for slower devices re-activate the VR scene
-          if (!this.el.sceneEl.isPlaying){
-            this.el.sceneEl.play()
-          }
-          console.log('************* Got beats. *************');
-          console.log(`Get Beats Time: ${performance.now()-startGetBeatsTime}`);
-          this.audioEl.beats = Object.assign([], e.data.beats)
-          if (this.sourceType === "resAudio") {
-            if (this.room.isUnlocked){
-              this.audioEl.play()
-            }
-          } else {
-            if (this.room.isUnlocked){
-              this.el.components.sound.playSound()
-            }
-          }
-          worker.terminate()
-        }
-      })
-    }
-    request.send()
-
-  },
 
   emitEvent () {
     if (this.audioEl) {
@@ -237,8 +185,102 @@ AFRAME.registerComponent('beat-sync', {
     }
   },
 
-  tick: function () {
-    this.throttledFunction();
+  playSound() {
+    if (this.sourceType === "resAudio") {
+      if (this.room.isUnlocked){
+        this.audioEl.play()
+      }
+    } else {
+      if (this.room.isUnlocked){
+        this.el.components.sound.playSound()
+      }
+    }
+  },
+
+  getBeats() {
+    const preBuffer = performance.now()
+    //Load buffer
+    let request = new XMLHttpRequest();
+        request.open('GET', this.audioEl.getAttribute('src'), true);
+        request.responseType = 'arraybuffer'
+    request.onload = () => {
+      console.log('getting beats...');
+      if (this.audioContext.state === "running") {
+        this.sourceType === "resAudio" ?
+          this.audioEl.pause() :
+          this.el.components.sound.pauseSound();
+      }
+      //Decode the audio file, then pass to worker to process beat data
+      this.audioContext.decodeAudioData(request.response, decBuffer =>{
+
+        const worker = new Worker(URL.createObjectURL(new Blob([`(${workerFn})()`], {
+          type: "text/javascript"
+        })))
+
+        //Prepare data into chunks
+        const chData = decBuffer.getChannelData(0)
+        const sampleRate = decBuffer.sampleRate
+        decBuffer = undefined
+        console.log(`Decode Processing Time: ${performance.now() - preBuffer}`);
+        const timeDelta = performance.now() - preBuffer
+        this.room.el.emit('bufferloaded', {timeDelta: timeDelta})
+        //Set number of divisions as inversely proportional to decode audio time
+        const divisions = Math.floor((chData.length)/((168*Math.pow(10,8))/timeDelta)) || 1
+        console.log(`Divisions: ${divisions}`);
+
+
+        const size = Math.floor(chData.length/divisions)
+        const chunkDur = (chData.length/divisions)/sampleRate
+        let slicesArray = []
+        for (let i=0; i < divisions; i ++) {
+          const sliced = chData.slice(i*size, (i+1) * size)
+          slicesArray.push(sliced)
+        }
+
+        let callIdx = 0
+        let chunkPos = 0
+
+        //Recursively build beatsArray from chunks
+        const sendToWorker = () => {
+          //base case
+          if (callIdx === divisions){
+            if (divisions === 1){
+              this.room.el.emit('beatsready')
+              this.playSound()
+            }
+            worker.terminate()
+            console.log(`Beat Processing Time: ${performance.now()-preBeat}`);
+            return
+          } else {
+            //recursion
+            worker.postMessage(slicesArray[callIdx].buffer, [slicesArray[callIdx].buffer])
+            worker.onmessage = e => {
+              if (callIdx > 0) {
+                //Start playing as soon as there is beat data
+                if (callIdx === 1) {
+                  this.room.el.emit('beatsready')
+                  this.playSound()
+                }
+                this.audioEl.beats = [...this.audioEl.beats, ...e.data.beats.map(beat => {
+                  return beat + chunkPos
+                })];
+
+              } else {
+                this.audioEl.beats = e.data.beats
+              }
+              console.log(`Iteration: ${callIdx}`);
+              callIdx++
+              chunkPos += chunkDur
+              sendToWorker()
+            }
+          }
+        }
+        const preBeat = performance.now()
+        sendToWorker()
+      })
+    }
+    request.send()
+
   }
 
 })
@@ -246,10 +288,9 @@ AFRAME.registerComponent('beat-sync', {
 const workerFn = function () {
   this.onmessage = function (e) {
     const beatPromise = new Promise ((resolve, reject) => {
-      resolve(new MusicTempo(e.data.buffer))
+      resolve(new MusicTempo(new Float32Array(e.data)))
     })
     beatPromise.then(beatData => {
-      console.log('received');
       this.postMessage({beats: beatData.beats})
     })
     // const beatData = new MusicTempo(e.data.buffer)

@@ -40,37 +40,23 @@ AFRAME.registerComponent('resonance-audio-room', {
     var sceneEl = this.el.sceneEl
     this.builtInGeometry = true
     this.cameraMatrix4 = new AFRAME.THREE.Matrix4()
-    this.resonanceAudioContext = new AudioContext({latencyHint:"playback"})
+    this.resonanceAudioContext = new AudioContext({latencyHint:"playback", sampleRate: 22100})
     this.resonanceAudioScene = new ResonanceAudio(this.resonanceAudioContext)
     this.resonanceAudioScene.output.connect(this.resonanceAudioContext.destination)
-    console.log(this.resonanceAudioContext.state);
-    if (this.resonanceAudioContext.state === "suspended" || navigator.vendor === "Apple Computer, Inc."){
-      let isDesktopSafari = false
-      this.isUnlocked = false
-      if (navigator.platform !== "iPhone"){
-        isDesktopSafari = true
-        this.startEvent = "keypress"
-        this.endEvent = "keypress"
-      } else {
-        this.startEvent = "touchstart"
-        this.endEvent = "touchend"
-      }
-      console.log('add click inst');
-      //add click instructions
-      var clickForAudioEl = document.createElement('a-entity')
-      clickForAudioEl.setAttribute('text', {
-        value: isDesktopSafari ? 'Press Any Key' : 'Click for Audio',
-        geometry: 'plane',
-        align: 'center',
-        color: 'red'
-      })
-      clickForAudioEl.object3D.position.set(0, 0.1, -.7)
-      this.clickForAudioEl = clickForAudioEl
-      var camera = document.querySelector('[camera]')
-      camera.appendChild(clickForAudioEl)
-      //initiate and unlock audio
-      document.body.addEventListener(this.startEvent, this.handleLockedResume)
-      document.body.addEventListener(this.endEvent, this.handleLockedPlay)
+
+    //check for Beat Sync
+    const attrStartsWith = (prefix) => {
+      return Array.from(document.querySelectorAll('*'))
+      .filter((e) => Array.from(e.attributes).filter(
+        ({name, value}) => name.startsWith(prefix)).length
+      ) ? true : false
+    }
+    this.isBeatSync = attrStartsWith('beat-sync')
+    if (this.isBeatSync) {
+      this.handleWaitForBeats()
+      // this.el.addEventListener('bufferloaded', this.handleWaitForBeats.bind(this))
+    } else {
+      this.clickUnlock()
     }
   },
 
@@ -203,10 +189,71 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.el.object3D.updateMatrixWorld()
   },
 
+  handleWaitForBeats () {
+    const self = this
+    const camera = document.querySelector('[camera]')
+    const waitForBeat = document.createElement('a-entity')
+    const bufferLoaded = e => {
+
+      const beatsReady = () => {
+        console.log('ready');
+        self.el.removeEventListener('beatsready', beatsReady)
+        camera.removeChild(waitForBeat)
+        self.clickUnlock()
+      }
+      self.el.addEventListener('beatsready', beatsReady)
+
+    }
+    waitForBeat.setAttribute('text', {
+      value: 'Waiting for Beat Data...',
+      geometry: 'plane',
+      align: 'center',
+      color: 'red'
+    })
+    waitForBeat.object3D.position.set(0, 0.1, -.7)
+    camera.appendChild(waitForBeat)
+    this.el.addEventListener('bufferloaded', bufferLoaded)
+    // this.el.removeEventListener('bufferloaded', this.handleWaitForBeats)
+
+  },
+
+  clickUnlock () {
+    //Add click functionality for audio-locked devices
+    if (this.resonanceAudioContext.state === "suspended" || navigator.vendor === "Apple Computer, Inc."){
+      let isDesktopSafari = false
+      this.isUnlocked = false
+      if (navigator.platform !== "iPhone"){
+        isDesktopSafari = true
+        this.startEvent = "keypress"
+        this.endEvent = "keypress"
+      } else {
+        this.startEvent = "touchstart"
+        this.endEvent = "touchend"
+      }
+      console.log('add click inst');
+      //add click instructions
+      var clickForAudioEl = document.createElement('a-entity')
+      clickForAudioEl.setAttribute('text', {
+        value: isDesktopSafari ? 'Press Any Key' : 'Click for Audio',
+        geometry: 'plane',
+        align: 'center',
+        color: 'red'
+      })
+      clickForAudioEl.object3D.position.set(0, 0.1, -.7)
+      this.clickForAudioEl = clickForAudioEl
+      var camera = document.querySelector('[camera]')
+      camera.appendChild(clickForAudioEl)
+      //initiate and unlock audio
+      document.body.addEventListener(this.startEvent, this.handleLockedResume)
+      document.body.addEventListener(this.endEvent, this.handleLockedPlay)
+    }
+  },
+
   handleLockedResume () {
     document.body.removeEventListener(this.startEvent, this.handleLockedResume)
     var camera = document.querySelector('[camera]')
     camera.removeChild(this.clickForAudioEl)
+    this.clickForAudioEl = undefined
     const cxt = this.resonanceAudioContext
     cxt.resume()
     this.isUnlocked = true
