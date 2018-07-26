@@ -24,25 +24,10 @@
         <img id='skyR' src='assets/img/beartracksR.jpg'>
         <img id='mandala' src='assets/img/mandala.jpg'>
         <img id='gothic' src='assets/img/gothic.jpg'>
-        <audio id="song" src="assets/audio/love.mp3">
-        <!-- <audio id="ambi" src="assets/audio/ambi.wav"> -->
+        <audio id="song" src="assets/audio/anamollus.mp3">
         <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
       </a-assets>
 
-      <!-- <a-box id="mybox" position="0 1 -2" rotation="0 45 0" color="rgb(208, 117, 151)"
-      animation="property: color; dir: alternate; dur: 90; easing:
-        easeInSine; from:rgb(200, 54, 54); to: rgb(28, 0, 255); startEvents: colorchange;"
-      animation__rot="property: rotation; dur: 90; from: 0 -45 0; to: 0 -40 0; startEvents: rotatean">
-      </a-box> -->
-
-      <!-- <a-box id="mybox" position="0 1 -2" rotation="0 45 0" color="rgb(208, 117, 151)">
-        <a-animation attribute="color" dur="90" from="rgb(200, 54, 54)" to="rgb(28, 0, 255)" begin="colorchange"></a-animation>
-      </a-box> -->
-
-      <!-- <a-box sound="src: #song; autoplay: true;"
-        position="0 1 2"
-        beat-sync__color="target:#mybox; event:colorchange">
-      </a-box> -->
       <a-resonance-audio-room id="room" width="50" height="50" depth="50" ambisonic-order="1"
         gain="3" speed-of-sound="300" left="transparent" right="transparent"
         front="transparent" back="transparent" down="grass" up="transparent">
@@ -61,6 +46,7 @@
         animation__rot="property: rotation; dur: 90; from: 0 -45 0; to: 0 -35 0; startEvents: rotateR"
         resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
         position="2.5 1.2 -2.5" rotation="0 -45 0"></a-entity>
+        <!-- for four speakers in high performance environments-->
         <!-- <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="2.5 1.5 2.5" rotation="0 -135 0"></a-entity>
         <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="-2.5 1.5 2.5" rotation="0 135 0"></a-entity> -->
       </a-resonance-audio-room>

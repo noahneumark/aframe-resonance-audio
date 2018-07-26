@@ -149,7 +149,8 @@ AFRAME.registerComponent('beat-sync', {
           //skip emits with 0 from pattern
           if (patternVal !== 0) {
             const event = this.data.event
-            this.target.emit(event, {val: patternVal})
+            const data = {beatIdx: this.beatIdx, patternIdx: this.patternIdx, val: patternVal}
+            this.target.emit(event, data)
           }
         }
         //Increment beat index if within threshold of the beat.
