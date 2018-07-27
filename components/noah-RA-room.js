@@ -54,7 +54,6 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.isBeatSync = attrStartsWith('beat-sync')
     if (this.isBeatSync) {
       this.handleWaitForBeats()
-      // this.el.addEventListener('bufferloaded', this.handleWaitForBeats.bind(this))
     } else {
       this.clickUnlock()
     }
@@ -193,10 +192,9 @@ AFRAME.registerComponent('resonance-audio-room', {
     const self = this
     const camera = document.querySelector('[camera]')
     const waitForBeat = document.createElement('a-entity')
-    const bufferLoaded = e => {
-
+    const bufferLoaded = function (e) {
+      self.el.removeEventListener('bufferloaded', bufferLoaded)
       const beatsReady = () => {
-        console.log('ready');
         self.el.removeEventListener('beatsready', beatsReady)
         camera.removeChild(waitForBeat)
         self.clickUnlock()
@@ -212,8 +210,8 @@ AFRAME.registerComponent('resonance-audio-room', {
     })
     waitForBeat.object3D.position.set(0, 0.1, -.7)
     camera.appendChild(waitForBeat)
-    this.el.addEventListener('bufferloaded', bufferLoaded)
-    // this.el.removeEventListener('bufferloaded', this.handleWaitForBeats)
+    self.el.addEventListener('bufferloaded', bufferLoaded)
+
 
   },
 

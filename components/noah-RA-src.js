@@ -35,6 +35,15 @@ AFRAME.registerComponent('resonance-audio-src', {
     this.el.parentEl.addEventListener('loaded', this.postLoadInit.bind(this))
     this.exposeAPI()
     this.initialPlay = true
+
+    //check for Beat Sync
+    const attrStartsWith = (prefix) => {
+      return Array.from(document.querySelectorAll('*'))
+      .filter((e) => Array.from(e.attributes).filter(
+        ({name, value}) => name.startsWith(prefix)).length
+      ) ? true : false
+    }
+    this.isBeatSync = attrStartsWith('beat-sync')
     this.throttledFunction = AFRAME.utils.throttle(this.setPosition, 40, this);
   },
 
@@ -197,7 +206,7 @@ AFRAME.registerComponent('resonance-audio-src', {
     // Set max distance
     this.resonanceAudioSceneSource.setSourceWidth(this.data.sourceWidth)
 
-    if (this.data.autoplay && this.resonanceAudioContext.state === "running") {
+    if (this.data.autoplay && this.resonanceAudioContext.state === "running" && !this.isBeatSync) {
       this.playSound()
     }
 
@@ -225,13 +234,14 @@ AFRAME.registerComponent('resonance-audio-src', {
   },
 
   play () {
+    if (!this.data.autoplay && this.initialPlay) {
+      this.initialPlay = false
+      return
+    } else if (this.resonanceAudioContext.state === "running" && !this.isBeatSync) {
+      this.playSound()
+    }
     if (this.initialPlay) {
       this.initialPlay = false
-    }
-    if (!this.data.autoplay && this.initialPlay) {
-      this.pauseSound()
-    } else if (this.resonanceAudioContext.state === "running") {
-      this.playSound()
     }
   },
 

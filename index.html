@@ -33,9 +33,9 @@
         front="transparent" back="transparent" down="grass" up="transparent">
         <a-entity
           id="songFL"
-          beat-sync__rotateL="target:#songFL; event:rotateL; frequency: 2;"
+          beat-sync__rotateL="target:#songFL; event:rotateL; frequency: 2; start: 1"
           beat-sync__rotateR="target:#songFR; event:rotateR; pattern: 1, 1, 1, 0;"
-          beat-sync__spotlight="target:#spotlight; event:spotlight; frequency: 4;"
+          beat-sync__spotlight="target:#spotlight; event:spotlight; frequency: 4; start: 2"
           animation__rot="property: rotation; dur: 60; from: 0 45 0; to: 0 35 0; startEvents: rotateL"
           gltf-model="#speaker" scale="0.06 0.06 0.06"
           resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
