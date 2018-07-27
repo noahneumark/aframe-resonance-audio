@@ -10,6 +10,7 @@ AFRAME.registerComponent('beat-sync', {
     pattern: {type: 'array', default: [1]},
     start: {type: 'int', default: 0},
     end: {type: 'int', default: null},
+    src: {type: 'string', default: ''},
     refresh: {type: 'number', default: 30},
     threshold: {type: 'number', default: .13}
   },
@@ -63,6 +64,35 @@ AFRAME.registerComponent('beat-sync', {
     }
   },
 
+  setUpSrc () {
+    const beatSrc = this.data.src
+    return new Promise((resolve, reject)=>{
+      if (beatSrc === '') {resolve('loading')}
+      else {
+        // Simplified asset parsing, similar to the one used by A-Frame.
+        if (typeof beatSrc !== 'string') { throw new TypeError('invalid src') }
+        // fetch(beatSrc, {mode: "cors"}).then( resp => {console.log(resp);})
+        this.room.el.emit('bufferloaded')
+        function loadJSON(src, callback) {
+          var xobj = new XMLHttpRequest();
+          xobj.overrideMimeType("application/json");
+          xobj.open('GET', src, true);
+          xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4 && xobj.status == "200") {
+              callback(JSON.parse(xobj.response));
+            }
+          };
+          xobj.send(null);
+        }
+        loadJSON(beatSrc, json => {
+          this.room.el.emit('beatsready')
+          this.playSound()
+          resolve(json)
+        })
+      }
+    })
+  },
+
   postLoadInit () {
     this.el.parentEl.removeEventListener('loaded', this.postLoadInit.bind(this))
 
@@ -87,11 +117,14 @@ AFRAME.registerComponent('beat-sync', {
         this.beatIdx = 0
       }
       audioEl.addEventListener('playing', resetBeat.bind(this))
-      if (!audioEl.beatData) {
-        audioEl.beatData = "loading"
-        if (window.Worker) {
-          this.getBeats()
-        }
+      if (!this.audioEl.beats) {
+        this.audioEl.beats = "loading"
+        this.setUpSrc().then(json=>{
+          this.audioEl.beats = json
+          if (window.Worker && this.audioEl.beats === "loading") {
+            this.getBeats()
+          }
+        })
       }
     }
   },
@@ -258,6 +291,7 @@ AFRAME.registerComponent('beat-sync', {
               this.playSound()
             }
             worker.terminate()
+            console.log(JSON.stringify(this.audioEl.beats));
             console.log(`Beat Processing Time: ${performance.now()-preBeat}`);
             return
           } else {

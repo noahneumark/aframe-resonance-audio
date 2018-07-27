@@ -45,14 +45,21 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.resonanceAudioScene.output.connect(this.resonanceAudioContext.destination)
 
     //check for Beat Sync
-    const attrStartsWith = (prefix) => {
-      return Array.from(document.querySelectorAll('*'))
+    const checkForBeatSyncComp = (prefix) => {
+      const beatsyncEl = Array.from(document.querySelectorAll('*'))
       .filter((e) => Array.from(e.attributes).filter(
         ({name, value}) => name.startsWith(prefix)).length
-      ) ? true : false
+      )[0]
+      if (beatsyncEl){
+        const beatSrc = Object.keys(beatsyncEl.components).find(attr => {
+          return attr.startsWith(prefix)
+        })
+        if (beatSrc) {return false}
+        else {return true}
+      } else {return false}
     }
-    this.isBeatSync = attrStartsWith('beat-sync')
-    if (this.isBeatSync) {
+    this.isBeatWait = checkForBeatSyncComp('beat-sync')
+    if (this.isBeatWait) {
       this.handleWaitForBeats()
     } else {
       this.clickUnlock()
@@ -209,9 +216,8 @@ AFRAME.registerComponent('resonance-audio-room', {
       color: 'red'
     })
     waitForBeat.object3D.position.set(0, 0.1, -.7)
-    camera.appendChild(waitForBeat)
     self.el.addEventListener('bufferloaded', bufferLoaded)
-
+    camera.appendChild(waitForBeat)
 
   },
 
