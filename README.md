@@ -40,9 +40,9 @@ version 0.2.0
   <!-- for beat sync animations include-->
   <script src="https://rawgit.com/ngokevin/kframe/master/components/animation/dist/aframe-animation-component.min.js"></script>
     
-  <script src="components/noah-ra-room.min.js"></script>
-  <script src="components/noah-ra-src.min.js"></script>
-  <script src="components/noah-ra-beatsync.min.js"></script>
+  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/8902516e/components/noah-ra-room.min.js"></script>
+  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/8902516e/components/noah-ra-src.min.js"></script>
+  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/8902516e/components/noah-ra-beatsync.min.js"></script>
   
 </head>
 ```
