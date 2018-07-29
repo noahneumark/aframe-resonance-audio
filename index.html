@@ -11,10 +11,10 @@
     <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://rawgit.com/ngokevin/kframe/master/components/animation/dist/aframe-animation-component.min.js"></script>
     <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
-    <script src="components/noah-RA-room.js"></script>
-    <script src="components/noah-RA-src.js"></script>
-    <script src="components/noah-RA-beatSync.js"></script>
-
+    <script src="components/noah-ra-room.js"></script>
+    <script src="components/noah-ra-src.js"></script>
+    <script src="components/noah-ra-beatsync.min.js"></script>
+<!-- testing -->
   </head>
   <body>
 
@@ -34,7 +34,7 @@
         <a-entity
           id="songFL"
           beat-sync__rotateL="target:#songFL; event:rotateL; frequency: 2; start: 1; src: beats.json"
-          beat-sync__rotateR="target:#songFR; event:rotateR; pattern: 1, 1, 1, 0"
+          beat-sync__rotateR="target:#songFR; event:rotateR;"
           beat-sync__spotlight="target:#spotlight; event:spotlight; frequency: 4; start: 2"
           animation__rot="property: rotation; dur: 60; from: 0 45 0; to: 0 35 0; startEvents: rotateL"
           gltf-model="#speaker" scale="0.06 0.06 0.06"

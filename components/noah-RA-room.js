@@ -1,7 +1,7 @@
 /* global AFRAME AudioContext */
-let roomObj
-const log = AFRAME.utils.debug
-const warn = log('components:resonance-audio-room:warn')
+// let roomObj
+// const log = AFRAME.utils.debug
+// const warn = log('components:resonance-audio-room:warn')
 
 const RESONANCE_MATERIAL = Object.keys(ResonanceAudio.Utils.ROOM_MATERIAL_COEFFICIENTS)
 
