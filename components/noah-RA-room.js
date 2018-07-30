@@ -223,34 +223,32 @@ AFRAME.registerComponent('resonance-audio-room', {
 
   clickUnlock () {
     //Add click functionality for audio-locked devices
-    if (this.resonanceAudioContext.state === "suspended" || navigator.vendor === "Apple Computer, Inc."){
-      let isDesktopSafari = false
-      this.isUnlocked = false
-      if (navigator.platform !== "iPhone"){
-        isDesktopSafari = true
-        this.startEvent = "keypress"
-        this.endEvent = "keypress"
-      } else {
-        this.startEvent = "touchstart"
-        this.endEvent = "touchend"
-      }
-      console.log('add click inst');
-      //add click instructions
-      var clickForAudioEl = document.createElement('a-entity')
-      clickForAudioEl.setAttribute('text', {
-        value: isDesktopSafari ? 'Press Any Key' : 'Click for Audio',
-        geometry: 'plane',
-        align: 'center',
-        color: 'red'
-      })
-      clickForAudioEl.object3D.position.set(0, 0.1, -.7)
-      this.clickForAudioEl = clickForAudioEl
-      var camera = document.querySelector('[camera]')
-      camera.appendChild(clickForAudioEl)
-      //initiate and unlock audio
-      document.body.addEventListener(this.startEvent, this.handleLockedResume)
-      document.body.addEventListener(this.endEvent, this.handleLockedPlay)
+    let isDesktop = false
+    this.isUnlocked = false
+    if (!AFRAME.utils.device.isMobile() && !AFRAME.utils.device.checkHeadsetConnected()) {
+      isDesktop = true
+      this.startEvent = "keypress"
+      this.endEvent = "keypress"
+    } else {
+      this.startEvent = "touchstart"
+      this.endEvent = "touchend"
     }
+
+    //add click instructions
+    var clickForAudioEl = document.createElement('a-entity')
+    clickForAudioEl.setAttribute('text', {
+      value: isDesktop ? 'Press Any Key' : 'Click for Audio',
+      geometry: 'plane',
+      align: 'center',
+      color: 'red'
+    })
+    clickForAudioEl.object3D.position.set(0, 0.1, -.7)
+    this.clickForAudioEl = clickForAudioEl
+    var camera = document.querySelector('[camera]')
+    camera.appendChild(clickForAudioEl)
+    //initiate and unlock audio
+    document.body.addEventListener(this.startEvent, this.handleLockedResume)
+    document.body.addEventListener(this.endEvent, this.handleLockedPlay)
   },
 
   handleLockedResume () {
