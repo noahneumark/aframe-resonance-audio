@@ -11,65 +11,74 @@
     <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://rawgit.com/ngokevin/kframe/master/components/animation/dist/aframe-animation-component.min.js"></script>
     <script src="https://rawgit.com/oscarmarinmiro/aframe-stereo-component/master/dist/aframe-stereo-component.min.js"></script>
-    <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-room.min.js"></script>
-    <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-src.min.js"></script>
-    <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-beatsync.min.js"></script>
-<!-- testing -->
+    <script src="/components/noah-ra-room.js"></script>
+    <script src="/components/noah-ra-src.js"></script>
+    <script src="/components/noah-ra-beatsync.js"></script>
+
   </head>
   <body>
 
     <a-scene>
       <a-assets>
-        <img id='skyL' src='assets/img/beartracksL.jpg'>
-        <img id='skyR' src='assets/img/beartracksR.jpg'>
+        <img id='skyL' src='assets/img/craterL.jpg'>
+        <img id='skyR' src='assets/img/craterR.jpg'>
         <img id='mandala' src='assets/img/mandala.jpg'>
         <img id='gothic' src='assets/img/gothic.jpg'>
         <audio id="song" src="assets/audio/anamollus.mp3">
         <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
+        <a-asset-item id="shack" src="models/shack/scene.gltf"></a-asset-item>
       </a-assets>
 
-      <a-resonance-audio-room id="room" width="50" height="50" depth="50" ambisonic-order="1"
-        gain="3" speed-of-sound="300" left="transparent" right="transparent"
-        front="transparent" back="transparent" down="grass" up="transparent">
+      <a-resonance-audio-room position="0 2.5 0" id="room" width="10" height="5" depth="8" ambisonic-order="1"
+        speed-of-sound="300" left="transparent" right="transparent"
+        front="transparent" back="transparent" down="grass" up="transparent" material="opacity:0">
         <a-entity
           id="songFL"
-          beat-sync__rotateL="target:#songFL; event:rotateL; frequency: 2; start: 1; src: beats.json"
+          beat-sync__rotateL="target:#songFL; event:rotateL; frequency: 2; src: beats.json"
           beat-sync__rotateR="target:#songFR; event:rotateR;"
-          beat-sync__spotlight="target:#spotlight; event:spotlight; frequency: 4; start: 2"
+          beat-sync__spotlightL1="target:#spotlightL; event:spotlight; frequency: .5; pattern: 0, 0, 1, 1; start: 16; end: 18"
+          beat-sync__spotlightR1="target:#spotlightR; event:spotlight; frequency: .5; pattern: 1, 1, 0, 0, 1, 0, 0, 0; start: 16; end: 19"
+          beat-sync__ambient="target:#ambient; event:fadein; frequency: 4"
           animation__rot="property: rotation; dur: 60; from: 0 45 0; to: 0 35 0; startEvents: rotateL"
-          gltf-model="#speaker" scale="0.06 0.06 0.06"
+          gltf-model="#speaker" scale="0.09 0.09 0.09"
           resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
-          position="-2.5 1.2 -2.5" rotation="0 45 0"></a-entity>
+          position="-2.5 -1.5 -2.5" rotation="0 45 0"></a-entity>
         <a-entity
         id="songFR"
-        gltf-model="#speaker" scale="0.06 0.06 0.06"
+        gltf-model="#speaker" scale="0.09 0.09 0.09"
         animation__rot="property: rotation; dur: 90; from: 0 -45 0; to: 0 -35 0; startEvents: rotateR"
         resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
-        position="2.5 1.2 -2.5" rotation="0 -45 0"></a-entity>
-        <!-- for four speakers in high performance environments-->
-        <!-- <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBL" dynamic-body resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="2.5 1.5 2.5" rotation="0 -135 0"></a-entity>
-        <a-entity gltf-model="#speaker" scale="0.06 0.06 0.06" id="songBR" dynamic-body resonance-audio-src="src:#song; channel:right; alpha:0.5; sharpness: 4; gain: .3; maxDistance: 40;" position="-2.5 1.5 2.5" rotation="0 135 0"></a-entity> -->
+        position="2.5 -1.5 -2.5" rotation="0 -45 0"></a-entity>
       </a-resonance-audio-room>
 
-      <a-sky src="#skyL" stereo="eye:left" rotation="0 200 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
-      <a-sky src="#skyR" stereo="eye:right" rotation="0 200 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
-      <a-sky src="#gothic" geometry="thetaLength:40;"></a-sky>
+      <a-entity gltf-model="#shack" scale="0.015 0.015 0.015" position="-7.7 0 -5" rotation="0 90 0"></a-entity>
 
-      <a-circle src="#mandala" radius="6" position="0 .5 0" rotation="-90 0 0"></a-circle>
-      <a-plane material="opacity: 0.0; transparent: true" position="0 1 0" rotation="-90 0 0" width="40" height="40" static-body ></a-plane>
-
-      <a-entity id="spotlight" light="type: spot; angle: 43; intensity: .9; penumbra: .3; color: rgb(252, 34, 34);"
-        position="0 5 0"
-        rotation="-73 0 -55"
-        animation="property:rotation; easing:linear; dur:2500; from:-73 0 -55; to: -73 360 -55; startEvents: spotlight;">
+      <a-entity>
+        <a-sky src="#skyL" stereo="eye:left" rotation="0 0 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
+        <a-sky src="#skyR" stereo="eye:right" rotation="0 0 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
       </a-entity>
-      <a-light type="ambient" intensity=".6"></a-light>
+      
+      <a-entity id="spotlightL" light="type: spot; angle: 30; intensity: 0; penumbra: .2; color: rgb(252, 34, 34);"
+        position="-3 5 0"
+        rotation="-56 13 0"
+        animation="property:light.intensity; easing:easeInExpo; dur:60; from:2.2; to: 0; startEvents: spotlight;">
+      </a-entity>
+
+      <a-entity id="spotlightR" light="type: spot; angle: 30; intensity: 0; penumbra: .2; color: rgb(252, 34, 34);"
+        position="3 5 0"
+        rotation="-56 -13 0"
+        animation="property:light.intensity; easing:easeInExpo; dur:60; from:2.2; to: 0; startEvents: spotlight;">
+      </a-entity>
+
+      <a-light id="ambient" color="#c9cbff" type="ambient" intensity=".7"
+      animation="property:color; easing:linear; dur:1800; from:#0026ff; to: #c9cbff; startEvents: fadein;"></a-light>
+      </a-light>
 
       <a-entity id="rig"
           movement-controls="speed: .05;"
           position="0 0 0">
         <a-entity camera
-          position="0 1.6 0"
+          position="0 2.2 2"
           stereocam="eye:left;"
           look-controls="pointerLockEnabled: true">
         </a-entity>

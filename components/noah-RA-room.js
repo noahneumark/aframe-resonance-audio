@@ -36,7 +36,7 @@ AFRAME.registerComponent('resonance-audio-room', {
     this.connectBuffer = this.connectBuffer.bind(this)
 
     this.throttledFunction = AFRAME.utils.throttle(this.setListener, 50, this);
-    this.isUnlocked = true
+    this.isUnlocked = false
     var sceneEl = this.el.sceneEl
     this.builtInGeometry = true
     this.cameraMatrix4 = new AFRAME.THREE.Matrix4()
@@ -224,7 +224,6 @@ AFRAME.registerComponent('resonance-audio-room', {
   clickUnlock () {
     //Add click functionality for audio-locked devices
     let isDesktop = false
-    this.isUnlocked = false
     if (!AFRAME.utils.device.isMobile() && !AFRAME.utils.device.checkHeadsetConnected()) {
       isDesktop = true
       this.startEvent = "keypress"
@@ -275,6 +274,18 @@ AFRAME.registerComponent('resonance-audio-room', {
         }
       }
     })
+    document.addEventListener('keydown', this.toggleSound.bind(this))
+  },
+
+  toggleSound (e) {
+    const cxt = this.resonanceAudioContext
+    if (e.which === 32){
+      if (cxt.state === "suspended") {
+        cxt.resume()
+      } else {
+        cxt.suspend()
+      }
+    }
   }
 
 })

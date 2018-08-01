@@ -177,20 +177,21 @@ AFRAME.registerComponent('beat-sync', {
             }
           }
         }
-        //emit event preceding beat by threshold amount.  Account for audio processing latency. Skip if on offbeat.
-        if (nextEmit - currentTime < this.data.threshold && nextEmit !== 0) {
-          this.patternInc()
+        //emit event preceding next emit by threshold amount.  Account for audio processing latency. Skip if on offbeat.
+        if (nextEmit - currentTime < this.data.threshold && nextEmit !== 0 && this.room.isUnlocked === true) {
+
           if (this.data.frequency < 1){
             this.beatDivisions.splice(0,1)
           }
 
           //skip emits with 0 from pattern and only within specified start and end points
-          if (patternVal !== 0 && this.beatIdx >= this.data.start && this.beatIdx <= this.data.end) {
+          if (patternVal !== 0 && (this.audioEl.beats[this.data.start] - currentTime < this.data.threshold) && !(this.audioEl.beats[this.data.end] - currentTime < this.data.threshold)) {
             const event = this.data.event
             const data = {beatIdx: this.beatIdx, patternIdx: this.patternIdx, val: patternVal}
             this.target.emit(event, data)
           }
-
+          // console.log(`ID: ${this.id}, Current Time: ${currentTime}, PatternIDX: ${this.patternIdx}, NextEmit: ${nextEmit}, patternVal: ${patternVal}`);
+          this.patternInc()
         }
         //Increment beat index if within threshold of the beat.
         if (this.audioEl.beats[this.beatIdx] - currentTime < this.data.threshold) {
@@ -214,6 +215,7 @@ AFRAME.registerComponent('beat-sync', {
       this.target.emit('start')
     } else if (this.beatIdx === this.data.end){
       this.target.emit('end')
+      this.pause()
     }
     this.beatIdx ++
     if (this.data.frequency < 1) {
