@@ -39,6 +39,10 @@
           beat-sync__spotlightL1="target:#spotlightL; event:spotlight; frequency: .5; pattern: 0, 0, 1, 1; start: 16; end: 18"
           beat-sync__spotlightR1="target:#spotlightR; event:spotlight; frequency: .5; pattern: 1, 1, 0, 0, 1, 0, 0, 0; start: 16; end: 19"
           beat-sync__ambient="target:#ambient; event:fadein; frequency: 4"
+          beat-sync__skyL1="target:#skyLeft; event:fadeout; frequency: .25; start: 32; end: 40"
+          beat-sync__skyR1="target:#skyRight; event:fadeout; frequency: .25; start: 32; end: 40"
+          beat-sync__skyL2="target:#skyLeft; event:rotate; frequency: 24; start: 40;"
+          beat-sync__skyR2="target:#skyRight; event:rotate; frequency: 24; start: 40;"
           animation__rot="property: rotation; dur: 60; from: 0 45 0; to: 0 35 0; startEvents: rotateL"
           gltf-model="#speaker" scale="0.09 0.09 0.09"
           resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
@@ -53,11 +57,17 @@
 
       <a-entity gltf-model="#shack" scale="0.015 0.015 0.015" position="-7.7 0 -5" rotation="0 90 0"></a-entity>
 
-      <a-entity>
-        <a-sky src="#skyL" stereo="eye:left" rotation="0 0 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
-        <a-sky src="#skyR" stereo="eye:right" rotation="0 0 0" geometry="thetaLength:70; thetaStart:40;"></a-sky>
-      </a-entity>
-      
+
+      <a-sky id="skyLeft" src="#skyL" stereo="eye:left" geometry="thetaLength:70; thetaStart:40;"
+      animation__blink1="property: color; dur: 90; loop: 1; dir: alternate; from: #ffffff; to: #000000; startEvents: fadeout"
+      animation__rot="property: rotation; dur: 13500; easing: easeInOutSine; from: 0 0 0; to: 0 360 0; startEvents: rotate"
+      ></a-sky>
+      <a-sky id="skyRight" src="#skyR" stereo="eye:right" geometry="thetaLength:70; thetaStart:40;"
+      animation__blink1="property: color; dur: 90; loop: 1; dir: alternate; from: #ffffff; to: #000000; startEvents: fadeout"
+      animation__rot="property: rotation; dur: 13500; easing: easeInOutSine; from: 0 0 0;  to: 0 360 0; startEvents: rotate"
+      ></a-sky>
+
+
       <a-entity id="spotlightL" light="type: spot; angle: 30; intensity: 0; penumbra: .2; color: rgb(252, 34, 34);"
         position="-3 5 0"
         rotation="-56 13 0"

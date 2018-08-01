@@ -170,7 +170,7 @@ AFRAME.registerComponent('beat-sync', {
           if (this.beatIdx === 0) {
             nextEmit = this.audioEl.beats[0]
           } else {
-            if (this.beatIdx%this.data.frequency === 0){
+            if (Math.abs(this.beatIdx-this.data.start)%this.data.frequency === 0){
               nextEmit = this.audioEl.beats[this.beatIdx]
             } else {
               nextEmit = 0
@@ -215,7 +215,7 @@ AFRAME.registerComponent('beat-sync', {
       this.target.emit('start')
     } else if (this.beatIdx === this.data.end){
       this.target.emit('end')
-      this.pause()
+      // this.pause()
     }
     this.beatIdx ++
     if (this.data.frequency < 1) {
