@@ -12,7 +12,8 @@ AFRAME.registerComponent('beat-sync', {
     end: {type: 'int', default: null},
     src: {type: 'string', default: ''},
     refresh: {type: 'number', default: 30},
-    threshold: {type: 'number', default: .13}
+    threshold: {type: 'number', default: .13},
+    debug: {type: 'boolean', default: false}
   },
 
   init: function () {
@@ -190,32 +191,45 @@ AFRAME.registerComponent('beat-sync', {
             const data = {beatIdx: this.beatIdx, patternIdx: this.patternIdx, val: patternVal}
             this.target.emit(event, data)
           }
-          // console.log(`ID: ${this.id}, Current Time: ${currentTime}, PatternIDX: ${this.patternIdx}, NextEmit: ${nextEmit}, patternVal: ${patternVal}`);
           this.patternInc()
         }
         //Increment beat index if within threshold of the beat.
         if (this.audioEl.beats[this.beatIdx] - currentTime < this.data.threshold) {
-          this.beatInc()
+          this.beatInc(currentTime)
         }
       }
     }
   },
 
   patternInc () {
-    //loop through pattern on increment
-    if (this.patternIdx === this.data.pattern.length -1) {
-      this.patternIdx = 0
+    //find next pattern index with Algo
+    if (this.data.frequency < 1) {
+      const nextDivNum = this.beatDivisions.length === 1 ? 1 : Math.floor(1/this.data.frequency) - this.beatDivisions.length
+      const totalBeatDivs = Math.abs((this.beatIdx - this.data.start)*Math.floor(1/this.data.frequency))
+      this.patternIdx = (totalBeatDivs + nextDivNum -1 )%this.data.pattern.length
     } else {
-      this.patternIdx ++
+      this.patternIdx = ((this.beatIdx - this.data.start + 1)/this.data.frequency)%this.data.pattern.length
     }
+
+    //loop through pattern on increment (old buggy method)
+    // if (this.patternIdx === this.data.pattern.length -1) {
+    //   this.patternIdx = 0
+    // } else {
+    //   this.patternIdx ++
+    // }
   },
 
-  beatInc () {
-    if (this.beatIdx === this.data.start){
+  beatInc (curTime) {
+    if (this.data.debug){
+      console.log(`Beat: ${this.beatIdx}, Time: ${curTime}`);
+    }
+    if (this.beatIdx === this.data.start && this.room.isUnlocked){
+      if (this.data.debug){
+        console.log(`${this.id} start ************************`);
+      }
       this.target.emit('start')
     } else if (this.beatIdx === this.data.end){
       this.target.emit('end')
-      // this.pause()
     }
     this.beatIdx ++
     if (this.data.frequency < 1) {
