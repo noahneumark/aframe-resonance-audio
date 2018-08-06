@@ -17,7 +17,7 @@ Create realistic sonic VR environments using Aframe's WebVR tools and Google's R
 
 ## Features
 
-version 0.2.2
+version 0.2.3
 
 * **Beat sync music** with VR animations. Can be set to analyze beat data on load (expensive), or can include optional JSON file with beat data (preferred in most cases).
 * **Sequencing capability**. Each beat sync instance supports variable frequency relative to beat (fractions or multiples), pattern loops, and start/end time.
