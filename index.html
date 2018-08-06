@@ -15,6 +15,7 @@
     <script src="/components/noah-ra-src.js"></script>
     <script src="/components/noah-ra-beatsync.js"></script>
 
+
   </head>
   <body>
 
@@ -24,7 +25,8 @@
         <img id='skyR' src='assets/img/craterR.jpg'>
         <img id='mandala' src='assets/img/mandala.jpg'>
         <img id='gothic' src='assets/img/gothic.jpg'>
-        <audio id="song" src="assets/audio/anamollus.mp3">
+        <audio id="song" src="assets/audio/anamollus.mp3"></audio>
+        <video id="fire" autoplay loop="true" src="assets/img/fire.mp4"> </video>
         <a-asset-item id="speaker" src="models/speaker/scene.gltf"></a-asset-item>
         <a-asset-item id="shack" src="models/shack/scene.gltf"></a-asset-item>
       </a-assets>
@@ -48,6 +50,11 @@
           beat-sync__skyR1="target:#skyRight; event:fadeout; frequency: .25; start: 32; end: 40"
           beat-sync__skyL2="target:#skyLeft; event:rotate; frequency: 24; start: 40; end: 41"
           beat-sync__skyR2="target:#skyRight; event:rotate; frequency: 24; start: 40; end: 41"
+
+          beat-sync__firebox1="target:#firebox; event:fadein; start: 98; end: 99"
+          beat-sync__firebox2="target:#firebox; event:fadein; frequency: 4; start: 100; end: 159"
+          beat-sync__firebox3="target:#firebox; event:close; start: 160; end: 161"
+
           animation__rot="property: rotation; dur: 60; from: 0 45 0; to: 0 35 0; startEvents: rotateL"
           gltf-model="#speaker" scale="0.09 0.09 0.09"
           resonance-audio-src="src:#song; channel:left; alpha:0.5; sharpness: 2; gain: 2; maxDistance: 40;"
@@ -94,9 +101,16 @@
       animation="property:color; easing:linear; dur:1800; from:#0026ff; to: #c9cbff; startEvents: fadein;"></a-light>
       </a-light>
 
+      <a-entity id="firebox" position="0 2.5 -0.5" geometry="primitive: box; width: 14.7; depth: 8.27; height: 4.23" material="opacity: 0; src: #fire; side: back;"
+      animation__fade="property:material.opacity; easing:linear; dur:3000; from:0; to: .7; startEvents: fadein;"
+      animation__close="property:material.opacity; easing:linear; dur:50; from:.7; to: 0; startEvents: close;">
+      </a-entity>
+
+
       <a-entity id="rig"
           movement-controls="speed: .05;"
           position="0 0 0">
+
         <a-entity camera
           position="0 2.2 2"
           stereocam="eye:left;"
@@ -106,5 +120,14 @@
 
     </a-scene>
   </body>
+
+  <script>
+    window.addEventListener('touchstart', ()=>{
+      document.querySelector('#fire').play()
+    })
+    window.addEventListener('keypress', ()=>{
+      document.querySelector('#fire').play()
+    })
+  </script>
 
 </html>

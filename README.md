@@ -1,5 +1,5 @@
 # A-Frame Resonance Audio / Beat Kit
-#### [👁 Live Demo 👁](https://noahneumark.github.io/aframe-resonance-audio/) - Best with headphones 
+#### [👁 Live Demo 👁](https://noahneumark.github.io/aframe-resonance-audio/) - Best with headphones (work in progress)
 Create realistic sonic VR environments using Aframe's WebVR tools and Google's Resonance Audio engine (Omnitone).  Integrate beat-syncing with a music source to trigger animations in time with music.
 
 [A-Frame](https://aframe.io)  
@@ -11,39 +11,40 @@ Create realistic sonic VR environments using Aframe's WebVR tools and Google's R
 ## Components Included
 
 * **resonance-audio-room** - A wrapper entity that defines the space that contains the sound source.
-* **resonance-audio-src** - An audio source within the room that emulates a realistic sound source with spatial attributes. 
+* **resonance-audio-src** - An audio source within the room that emulates a realistic sound source with spatial attributes.
 * **beat-sync** - Integrate with a `resonance-audio-src` to trigger beat sychronized events.  Can target animations on any entity in the scene.
+* **more to come...**
 
 ## Features
 
-version 0.2.1
+version 0.2.2
 
 * **Beat sync music** with VR animations. Can be set to analyze beat data on load (expensive), or can include optional JSON file with beat data (preferred in most cases).
 * **Sequencing capability**. Each beat sync instance supports variable frequency relative to beat (fractions or multiples), pattern loops, and start/end time.
-* **Unlock audio support.**  Click screen unlocks the audio to account for Safari's (and now Chrome's) restrictive policy on autoplay. 
-* **Ambisonic** (spherical 3d) audio support for 4 channel 1st order source files. 
+* **Unlock audio support.**  Click screen unlocks the audio to account for Safari's (and now Chrome's) restrictive policy on autoplay.
+* **Ambisonic** (spherical 3d) audio support for 4 channel 1st order source files.
 * **Loop and autoplay.**
 * **Room options** allow changing materials, and dimensions.
-* **Sound source** options include directivity patterns, gain control, maximum distance, autoplay, loop, and selection of audio channel (from a stereo source). Multiple independent sources within a room. 
+* **Sound source** options include directivity patterns, gain control, maximum distance, autoplay, loop, and selection of audio channel (from a stereo source). Multiple independent sources within a room.
 * **Instantiate multiple instances** of the same audio source. You can separate a source by 'left' or 'right' channel.
-* **Option for seamless loops.** 
+* **Option for seamless loops.**
 
 ## Documentation
 ### Installation
 ```html
 <head>
   <!-- ...meta/title... -->
-  
+
   <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
-    
+
   <!-- for beat sync animations include-->
   <script src="https://rawgit.com/ngokevin/kframe/master/components/animation/dist/aframe-animation-component.min.js"></script>
-    
+
   <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-room.min.js"></script>
   <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-src.min.js"></script>
   <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-beatsync.min.js"></script>
-  
+
 </head>
 ```
 ### Create a Basic Scene
@@ -54,13 +55,13 @@ In this scene, we have two audio sources that reference the same stereo audio fi
 	<a-assets>
 		<audio id="song" src="assets/audio/mysong.mp3">
 	</a-assets>
-	
-	<a-resonance-audio-room id="room" 
+
+	<a-resonance-audio-room id="room"
 	width="50" height="50" depth="50"
 	left="transparent" right="transparent"
 	front="transparent" back="transparent"
 	down="grass" up="transparent">
-	
+
 		<a-entity id="songL"
 		position="-2.5 1.2 -2.5"
 		beat-sync__rotL="target:#songL; event:rotateL;
@@ -70,14 +71,14 @@ In this scene, we have two audio sources that reference the same stereo audio fi
 		to: 0 35 0; startEvents: rotateL"
 		resonance-audio-src="src:#song; channel:left; alpha:0.5;
 		sharpness: 2; gain: 2; maxDistance: 40;"></a-entity>
-		
+
 		<a-entity id="songR"
 		position="2.5 1.2 -2.5"
 		animation="property: rotation; dur: 90; from: 0 -45 0;
 		to: 0 -35 0; startEvents: rotateR"
 		resonance-audio-src="src:#song; channel:right; alpha:0.5;
 		sharpness: 2; gain: 2; maxDistance: 40;"></a-entity>
-          
+
 	</a-resonance-audio-room>
 </a-scene>
 ```
@@ -103,15 +104,15 @@ or as a primitive `<a-resonance-audio-room>`:
 | `depth`    | Depth of the audio room (in meters). | 0
 | `ambisonicOrder` | [Ambisonic order](https://www.youtube.com/watch?v=C0xRAf9-XeU) of the audio room. | 1
 | `speedOfSound` | Speed of sound within the audio room (in meters per second). | 343
-| `left`     | Material of the left room wall.  | `transparent` | 
-| `right`     | Material of the right room wall.  | `transparent ` | 
-| `front`     | Material of the front room wall.  | `transparent ` | 
-| `back`     | Material of the back room wall.  | `transparent ` | 
-| `down`     | Material of the room floor.  | `transparent ` | 
-| `up`     | Material of the room ceiling.  | `transparent ` | 
+| `left`     | Material of the left room wall.  | `transparent` |
+| `right`     | Material of the right room wall.  | `transparent ` |
+| `front`     | Material of the front room wall.  | `transparent ` |
+| `back`     | Material of the back room wall.  | `transparent ` |
+| `down`     | Material of the room floor.  | `transparent ` |
+| `up`     | Material of the room ceiling.  | `transparent ` |
 | `src` | Path to ambisonic 4 channel audio file. Can be a self contained path, or reference the id of an item loaded in `<a-assets>`.| *empty* |
 | `loop` | If an ambisonic input is included, set a loop option. | `true` |
-| `autoplay` | Set autoplay on load for ambisonic audio. | `true` | 
+| `autoplay` | Set autoplay on load for ambisonic audio. | `true` |
 | `gain` | Set the gain level for ambisonic audio. | 1 |
 
 ### Supported Wall Materials
@@ -156,8 +157,8 @@ or as a primitive `<a-resonance-audio-src>`:
 ```
 ### Properties
 
-| Property | Description | Default value | 
-| -------- | ----------- | ------------- | 
+| Property | Description | Default value |
+| -------- | ----------- | ------------- |
 | `src` *(Required)*| Points to the audio source. Enter either an #*id* string pointing to a  `<audio>` or `<video>` set in the `<assets>` (preferable in most cases); or provide a path to a resource. If you provide a path, the audio will load as a buffer which is more resource intensive, but ideal for short seamless loops.  Multiple entities can point to the same  `<audio>` asset.| *empty* |
 | `loop` | Set a loop option. | `true` |
 | `autoplay` | Set autoplay on load. | `true` |
@@ -170,15 +171,15 @@ or as a primitive `<a-resonance-audio-src>`:
 ***
 
 ### `beat-sync`
-Include this component with a `resonance-audio-src` instance, and it emits events to a designated target element in sync with the musical beats of its audio source.  One intended application is to target animation components and designate `startEvents`, but any application that responds to events is possible. Multiple instances of `beat-sync` can be used on a single `resonance-audio-src` with different configurations, but if you have multiple `resonance-audio-src` instances referencing the same `<audio>` element, then the `beat-sync` instances **MUST** be on only one of them. 
+Include this component with a `resonance-audio-src` instance, and it emits events to a designated target element in sync with the musical beats of its audio source.  One intended application is to target animation components and designate `startEvents`, but any application that responds to events is possible. Multiple instances of `beat-sync` can be used on a single `resonance-audio-src` with different configurations, but if you have multiple `resonance-audio-src` instances referencing the same `<audio>` element, then the `beat-sync` instances **MUST** be on only one of them.
 
 ### Properties
 
-| Property | Description | Default value | 
-| -------- | ----------- | ------------- | 
+| Property | Description | Default value |
+| -------- | ----------- | ------------- |
 | `target` *required* | Designate the element upon which to trigger the events. Enter an #*id* string. | *empty* |
 | `event` | Name the event to send to the target.  If sending multiple events to the same element, you need to provide unique names.  Otherwise, you can just use the default `onbeat` event. | `onbeat` |
-| `frequency` | Enter a multiple or fraction of a beat. By default, the component sends events on every beat. | 1 |
+| `frequency` | Enter a multiple or fraction of a beat. By default, the component sends events on every beat.  Multiples can only be integers at this time. | 1 |
 | `pattern` | Create a rhythmic pattern using a series of numbers that the component will cycle through relative to the specified frequency. For example `1, 0, 1, 1`, would skip every second event trigger of a 4 trigger pattern.  The value data gets sent through the event, and any number can be used for *on* events, but `0` is reserved for *off* events. | 1 |
 | `start` | Designate the number of the starting beat (starting at 0). Events will not fire until it reaches this beat.  A `start` event will also fire at this point. | 0
 | `end` | Designate the number of the ending beat (starting at 0). Events will not fire after it reaches this beat.  An `end` event will also fire at this point. | *The last beat* |
@@ -192,7 +193,7 @@ By default, `beat-sync` uses a beat-finding algorithm on load of the scene, but 
 //You can use this code to get an array of beats if you song is a consistent tempo and computer quantized.
 
 const endBeat = 146.23 //Time at the last beat (not the end of the song)
-const startBeat = .052 
+const startBeat = .052
 const totalBeats = 240
 
 const songLength = endBeat - startBeat
@@ -209,10 +210,10 @@ console.log(JSON.stringify(beats)); //copy this output and save into a json file
 
 ## Notes
 * Older devices have trouble processing many audio tracks at a time. Ambisonic audio is an intense live rendering process, so if you're designing for compatibility in mind, you will have to limit number of audio sources, or keep files uncompressed.
-* Processing beat data on the fly is a processor intensive algorithm.  I have optimized it as best as I can for front end purposes, and a slow device will start playing as soon as there is some data, but it may experience glitches until it finishes.  Also, this algorithm is more accurate on faster machines, as it doesn't need to process the audio in chunks. 
-* Have not yet tested media streaming, although there is some implementation in this version carried over from forking. 
-* Have not yet tested live updating of sound attributes. 
-* There is limited documentation from Google on directivity patterns, so I'm unclear exactly how those properties are affecting the sound, and it's relation with object orientation. 
+* Processing beat data on the fly is a processor intensive algorithm.  I have optimized it as best as I can for front end purposes, and a slow device will start playing as soon as there is some data, but it may experience glitches until it finishes.  Also, this algorithm is more accurate on faster machines, as it doesn't need to process the audio in chunks.
+* Have not yet tested media streaming, although there is some implementation in this version carried over from forking.
+* Have not yet tested live updating of sound attributes.
+* There is limited documentation from Google on directivity patterns, so I'm unclear exactly how those properties are affecting the sound, and it's relation with object orientation.
 
 
 ***
@@ -230,6 +231,11 @@ console.log(JSON.stringify(beats)); //copy this output and save into a json file
 
 <sub>**Music Tempo algorithms provide autobeat data**</sub>  
 <sup>Project available at [killercrush/music-tempo](https://github.com/killercrush/music-tempo)</sup>
+
+<sub>**Elements in Demo**</sub>  
+<sup>Shack model by [grimren13](https://sketchfab.com/grimren13): [Shack model](https://sketchfab.com/models/fb411967d4574ce196c8a80d0fe51095)</sup>  
+<sup>Fire video by [Fire Fighting](https://www.youtube.com/channel/UCd1387wysGrbdCfYQJe4-SQ): [Video](https://www.youtube.com/watch?v=ieWT8TgScuo)</sup>  
+<sup>Music *Ana Mollus* by [Noah Neumark](https://soundcloud.com/noahneumark) </sup>
 
 ***
 
