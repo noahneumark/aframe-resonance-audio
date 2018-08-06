@@ -17,7 +17,7 @@ Create realistic sonic VR environments using Aframe's WebVR tools and Google's R
 
 ## Features
 
-version 0.2.3
+version 0.2.4
 
 * **Beat sync music** with VR animations. Can be set to analyze beat data on load (expensive), or can include optional JSON file with beat data (preferred in most cases).
 * **Sequencing capability**. Each beat sync instance supports variable frequency relative to beat (fractions or multiples), pattern loops, and start/end time.
@@ -41,9 +41,9 @@ version 0.2.3
   <!-- for beat sync animations include-->
   <script src="https://rawgit.com/ngokevin/kframe/master/components/animation/dist/aframe-animation-component.min.js"></script>
 
-  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-room.min.js"></script>
-  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-src.min.js"></script>
-  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/f453473/components/noah-ra-beatsync.min.js"></script>
+  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/fe37437/components/noah-ra-room.min.js"></script>
+  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/fe37437/components/noah-ra-src.min.js"></script>
+  <script src="https://cdn.rawgit.com/noahneumark/aframe-resonance-audio/fe37437/components/noah-ra-beatsync.min.js"></script>
 
 </head>
 ```
